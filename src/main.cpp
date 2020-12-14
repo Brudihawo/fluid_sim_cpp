@@ -16,16 +16,6 @@
 
 // #DEFINE BOUNDARY_PERIODIC
 
-struct sim_params {
-    long NX;
-    long NY;
-    double DELTA_T;
-    long N_TIMESTEPS;
-    double NU;
-    double v_init;
-    int dist_center_init;
-};
-
 void timestep(double DELTA_T, double** u, double** v, long NX, long NY, double NU) {
     for (int j = 0; j < NY; j++) {
         for (int i = 0; i < NX; i++) {
@@ -43,6 +33,7 @@ static void sim(GLFWwindow* window, sim_params& params) {
     double NU = params.NU;
     double v_init = params.v_init;
     int dist_center_init = params.dist_center_init;
+    int timeskip = params.timeskip;
 
     double** u = new double*[NX];
     double** v = new double*[NX];
@@ -79,7 +70,8 @@ static void sim(GLFWwindow* window, sim_params& params) {
     // SIMULATION
     for (long t = 0; t < N_TIMESTEPS; t++) {
         timestep(DELTAT, u, v, NX, NY, NU);
-        display(window, t, u, v, NX, NY);
+        if (t % timeskip == 0)
+            display(window, t, u, v, NX, NY);
         if (glfwWindowShouldClose(window)) break;
     }
 
@@ -100,13 +92,13 @@ int main() {
         .NX = 100,
         .NY = 100,
         .DELTA_T = 0.0001,
-        .N_TIMESTEPS = 200000,
-        .NU = 0.0000001,
-        .v_init = 10.0,
-        .dist_center_init = 5
+        .N_TIMESTEPS = 20000,
+        .v_init = 1.0,
+        .dist_center_init = 10,
+        .timeskip = 100
     };
     
-    int XRES = 1100;
+    int XRES = 1200;
     int YRES = 600;
 
     // glfw3 initialisation
@@ -130,7 +122,6 @@ int main() {
         return 1;
     }
 
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImPlot::CreateContext();
@@ -138,8 +129,16 @@ int main() {
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+
+    bool init_done = false;
+
+    while (!init_done & !glfwWindowShouldClose(window)) {
+        sim_init_window(window, params, init_done);
+    }
     
-    sim(window, params);
+    if (init_done) {
+        sim(window, params);
+    }
 
     ImPlot::DestroyContext();
     ImGui::DestroyContext();

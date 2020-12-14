@@ -1,8 +1,8 @@
 #include "discrete_math.h"
 #include <limits>
 
-float ddx(double** s, long x, long y, long NX) {
-    float sp, sm;
+double ddx(double** s, long x, long y, long NX) {
+    double sp, sm;
     if (x < NX - 1)
         sp = s[x + 1][y];
     else
@@ -20,8 +20,8 @@ float ddx(double** s, long x, long y, long NX) {
     return (sp - sm) / 2.0f;
 }
 
-float ddy(double** s, long x, long y, long NY) {
-    float sp, sm;
+double ddy(double** s, long x, long y, long NY) {
+    double sp, sm;
     if (y < NY - 1)
         sp = s[x][y + 1];
     else
@@ -39,8 +39,8 @@ float ddy(double** s, long x, long y, long NY) {
     return (sp - sm) / 2.0f;
 }
 
-float d2dx(double** s, long x, long y, long NX) {
-    float sp, sm;
+double d2dx(double** s, long x, long y, long NX) {
+    double sp, sm;
     if (x < NX - 2)
         sp = s[x + 2][y];
     else
@@ -58,8 +58,8 @@ float d2dx(double** s, long x, long y, long NX) {
     return (sp + sm - 2 * s[x][y]) / 4.0f;
 }
 
-float d2dy(double** s, long x, long y, long NY) {
-    float sp, sm;
+double d2dy(double** s, long x, long y, long NY) {
+    double sp, sm;
     if (y < NY - 2)
         sp = s[x][y + 2];
     else

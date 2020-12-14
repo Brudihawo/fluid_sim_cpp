@@ -1,16 +1,10 @@
 #pragma once
+#include "container.h"
 
-struct interval
-{
-    double max;
-    double min;
-};
-
-float ddx(double** s, long  x, long  y, long  NX);
-float ddy(double** s, long  x, long  y, long  NY);
-
-float d2dx(double** s, long  x, long  y, long  NX);
-float d2dy(double** s, long  x, long  y, long  NY);
+double ddx(double** s, long  x, long  y, long  NX);
+double ddy(double** s, long  x, long  y, long  NY);
+double d2dx(double** s, long  x, long  y, long  NX);
+double d2dy(double** s, long  x, long  y, long  NY);
 
 void smooth(int n_iterations, double** s, double** tmp, long NX, long  NY);
 

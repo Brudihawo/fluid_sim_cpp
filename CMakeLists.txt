@@ -5,7 +5,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(TOP_LIB_DIR C:/Users/hawoh/workspace/libraries)
 
 project(FluidSim2D)
-add_executable(FluidSim2D src/main.cpp)
+add_executable(FluidSim2D "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
 add_subdirectory(src)
 add_subdirectory(res)
 
@@ -31,7 +31,9 @@ target_link_libraries(FluidSim2D imgui)
 target_link_libraries(FluidSim2D implot)
 
 # src
-target_include_directories(FluidSim2D PUBLIC "${src_INCLUDE_DIRS}")
+target_include_directories(FluidSim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src")
+get_target_property(FluidSim2D_SOURCES FluidSim2D SOURCES)
+message("${FluidSim2D_SOURCES}")
 
 # math
 target_link_libraries(FluidSim2D math)
