@@ -85,6 +85,9 @@ void display(GLFWwindow *window, long timestep, double** u, double** v, long NX,
 
     // RENDERING
     imgui_render(window);
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
+        glfwSetWindowShouldClose(window, 1);    
+    }
 }
 
 void sim_init_window(GLFWwindow* window, sim_params& params, bool& init_done) {
@@ -121,7 +124,7 @@ void sim_init_window(GLFWwindow* window, sim_params& params, bool& init_done) {
         params.v_init = v_init;
         params.timeskip = timeskip;
     }
-
-    
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
+        glfwSetWindowShouldClose(window, 1);    
+    }
 }
-
