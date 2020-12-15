@@ -10,80 +10,27 @@
 #include "implot.h"
 
 #include "imgui_defs.cpp"
-
-#include "discrete_math.h"
+#include "container.h"
 
 
 // #DEFINE BOUNDARY_PERIODIC
-
-void timestep(double DELTA_T, double** u, double** v, long NX, long NY, double NU) {
-    for (int j = 0; j < NY; j++) {
-        for (int i = 0; i < NX; i++) {
-            u[i][j] += DELTA_T * ( NU * (d2dx(u, i, j, NX) + d2dy(u, i, j, NY)) - u[i][j] * ddx(u, i, j, NX) - v[i][j] * ddy(u, i, j, NY));
-            v[i][j] += DELTA_T * ( NU * (d2dx(v, i, j, NX) + d2dy(v, i, j, NY)) - u[i][j] * ddx(v, i, j, NX) - v[i][j] * ddy(v, i, j, NY));
-        }
-    }
-}
-
 static void sim(GLFWwindow* window, sim_params& params) {
-    long NX = params.NX;
-    long NY = params.NY;
-    long N_TIMESTEPS = params.N_TIMESTEPS;
-    double DELTAT = params.DELTA_T;
-    double NU = params.NU;
+    simulation_domain domain(params);
     double v_init = params.v_init;
     int dist_center_init = params.dist_center_init;
     int timeskip = params.timeskip;
+    bool restart_sim = false;
 
-    double** u = new double*[NX];
-    double** v = new double*[NX];
-    double** tmp = new double*[NX];
-
-    for (int i = 0; i < NX; i++) {
-        u[i] = new double[NY];
-        v[i] = new double[NY];
-        tmp[i] = new double[NY];
-    }
-
-    // INIT AS ZERO
-    for (int j = 0; j < NY; j++) {
-        for (int i = 0; i < NX; i++) {
-            u[i][j] = 0.0;
-            v[i][j] = 0.0;
-            tmp[i][j] = 0.0;
-        }
-    }
-
-    // SET INITIAL VELOCITY IN CENTER
-    for (int j = NY / 2 - dist_center_init; j < NY / 2 + dist_center_init; j++) {
-        for (int i = NX / 2 - dist_center_init; i < NX / 2 + dist_center_init; i++) {
-            u[i][j] = v_init;
-        }
-    }
-
-    // TODO: Handle Boundary Conditions, dont just skip the boundary cells
     // GAUSSIAN SMOOTH VELOCITIES
-    int n_smooth_iter = 5;
-    smooth(n_smooth_iter, u, tmp, NX, NY);
-    smooth(n_smooth_iter, v, tmp, NX, NY);
+    domain.smooth(1);
 
     // SIMULATION
-    for (long t = 0; t < N_TIMESTEPS; t++) {
-        timestep(DELTAT, u, v, NX, NY, NU);
-        if (t % timeskip == 0)
-            display(window, t, u, v, NX, NY);
-        if (glfwWindowShouldClose(window)) break;
+    for (long t = 0; domain.timestep(t); t++) {
+        if (t % timeskip == 0) {
+            display(window, t, domain.get_data(), restart_sim);
+        }
+        if (glfwWindowShouldClose(window) | restart_sim) break;
     }
-
-    // CLEANUP
-    for (int i = 0; i < NX; i++) {
-        delete[] u[i];
-        delete[] v[i];
-        delete[] tmp[i];
-    }
-    delete[] u;
-    delete[] v;
-    delete[] tmp;
 }
 
 
@@ -130,14 +77,15 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    bool init_done = false;
-
-    while (!init_done & !glfwWindowShouldClose(window)) {
-        sim_init_window(window, params, init_done);
-    }
-    
-    if (init_done) {
-        sim(window, params);
+    while (!glfwWindowShouldClose(window)) {
+        bool init_done = false;
+        while (!init_done & !glfwWindowShouldClose(window)) {
+            sim_init_window(window, params, init_done);
+        }
+        
+        if (init_done) {
+            sim(window, params);
+        }
     }
 
     ImPlot::DestroyContext();

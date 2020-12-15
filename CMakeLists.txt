@@ -32,6 +32,7 @@ target_link_libraries(FluidSim2D implot)
 
 # src
 target_include_directories(FluidSim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src")
+target_sources(FluidSim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src/container.cpp")
 get_target_property(FluidSim2D_SOURCES FluidSim2D SOURCES)
 message("${FluidSim2D_SOURCES}")
 
