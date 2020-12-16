@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 /* Domain data container@n 
 double ** fields: Pointer to scalar field array@n
@@ -6,7 +7,7 @@ int N_SCALAR_FIELDS: Number of scalar fields@n
 long NX: Resolution of fields in x@n
 long NY: Resolution of fields in y*/
 typedef struct domain_data_t {
-    double** fields;
+    std::vector<std::vector<double>>& fields;
     int N_SCALAR_FIELDS;
     long NX;
     long NY;

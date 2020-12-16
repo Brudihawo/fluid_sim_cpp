@@ -1,6 +1,10 @@
 # 2D-Simulation Framework with live viewing written in C++
 
-## TODOS:
-1. Fix seg fault on concentration sim init
-2. Implement field descriptors
+## Updates
+- Diffusion simulation is working
 
+## TODOS:
+1. Implement field descriptors
+2. Implement different boundary conditions
+
+    

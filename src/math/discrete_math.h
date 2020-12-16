@@ -1,5 +1,6 @@
 #pragma once
 #include "container.h"
 #include <utility>
+#include <vector>
 
-void find_min_max(std::pair<double, double>& iv, const double* s, long MAXINDEX);
+void find_min_max(std::pair<double, double>& iv, std::vector<double>& s, long MAXINDEX);

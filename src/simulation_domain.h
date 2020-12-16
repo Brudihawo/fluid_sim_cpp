@@ -1,30 +1,36 @@
 #pragma once
 #include "container.h"
+#include <vector>
 
 class SimulationDomain {
     protected:
-        double** fields;
-        int N_SCALAR_FIELDS;
-        double* extra_params;
+        const int N_SCALAR_FIELDS;
+        std::vector<std::vector<double>> fields;
+        std::vector<std::vector<double>> old;
+        
+        const long NX;
+        const long NY;
+        const double DELTA;
+        const double DELTA_T;
+        const long N_TIMESTEPS;
 
-        long NX;
-        long NY;
-        double DELTA;
-        double DELTA_T;
-        long N_TIMESTEPS;
+        std::vector<double> extra_params;
 
         long idx(long x, long y);
         void init();
         
     public:
-        SimulationDomain(SimParams& p);
+        SimulationDomain(SimParams& p, int n_scalar_fields);
         virtual ~SimulationDomain() = 0;
 
         virtual bool timestep(long t) = 0;
         inline DomainData get_data() {return {fields, N_SCALAR_FIELDS, NX, NY};} 
 
-        double ddx(double* s, long  x, long  y);
-        double ddy(double* s, long  x, long  y);
-        double d2dx(double* s, long  x, long  y);
-        double d2dy(double* s, long  x, long  y);
+        double ddx(std::vector<double>& s, long  x, long  y);
+        double ddy(std::vector<double>& s, long  x, long  y);
+        double d2dx(std::vector<double>& s, long  x, long  y);
+        double d2dy(std::vector<double>& s, long  x, long  y);
+
+        void add_noise(int field_index, double sigma);
+        void smooth_gaussian(int field_index, int n_iterations);
 };

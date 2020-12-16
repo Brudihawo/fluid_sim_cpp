@@ -1,8 +1,9 @@
 #include "discrete_math.h"
 #include <limits>
 #include <utility>
+#include <vector>
 
-void find_min_max(std::pair<double, double>& iv, const double* s, long MAXINDEX) {
+void find_min_max(std::pair<double, double>& iv, std::vector<double>& s, long MAXINDEX) {
     iv.first = -std::numeric_limits<double>::max();
     iv.second =  std::numeric_limits<double>::max();
     for (long i = 0; i < MAXINDEX; i++) {

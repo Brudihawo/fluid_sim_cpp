@@ -16,13 +16,13 @@
 
 
 // #DEFINE BOUNDARY_PERIODIC
-static void sim(GLFWwindow* window, int timeskip, SimParams& params, ViewParams& view_ps, double* additional_params) {
-    ConcentrationDomain domain(params, additional_params/*NU / D*/);
+static void sim(GLFWwindow* window, SimType sim_type, SimParams& params, ViewParams& view_ps, std::vector<double>& additional_params) {
+    ConcentrationDomain domain(params, additional_params);
     bool restart_sim = false;
 
     // SIMULATION
     for (long t = 0; domain.timestep(t); t++) {
-        if (t % timeskip == 0) {
+        if (t % view_ps.timeskip == 0) {
             display(window, t, domain.get_data(), restart_sim);
         }
         if (glfwWindowShouldClose(window) | restart_sim) break;
@@ -34,6 +34,7 @@ int main() {
     SimParams sim_ps = {
         .NX = 100,
         .NY = 100,
+        .DELTA = 1.0,
         .DELTA_T = 0.0001,
         .N_TIMESTEPS = 20000,
     };
@@ -46,7 +47,7 @@ int main() {
     SimType sim_type = SimType::NONE;
 
     // FIXME: Additional params hardcoded
-    double additional_params[1] = {1.0};
+    std::vector<double> additional_params = {1.0};
 
     GLFWwindow* window = glfw_imgui_init(view_ps);
     if (window == nullptr) return -1;

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <limits>
-
+#include <vector>
 #include "GLFW/glfw3.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -61,17 +61,14 @@ void display(GLFWwindow *window, long timestep, const DomainData& d, bool& resta
 
     for (int n = 0; n < d.N_SCALAR_FIELDS; n++) {
         find_min_max(iv[n], d.fields[n], d.NX * d.NY);
-    }
-
-    for (int i = 0; i < 2; i++) {
-        if (iv[i].first == iv[i].second) {
-            iv[i].first = 0.0;
-            iv[i].second = 1.0;
+        if (iv[n].first == iv[n].second) {
+            iv[n].first = 0.0;
+            iv[n].second = 1.0;
         }
-        if (iv[i].first == std::numeric_limits<double>::max())
-            iv[i].first = 0.0;
-        if (iv[i].second == -std::numeric_limits<double>::max())
-            iv[i].second = 1.0;
+        if (iv[n].first == -std::numeric_limits<double>::max())
+            iv[n].first = 0.0;
+        if (iv[n].second == std::numeric_limits<double>::max())
+            iv[n].second = 1.0;
     }
 
     glfwPollEvents();
@@ -79,15 +76,18 @@ void display(GLFWwindow *window, long timestep, const DomainData& d, bool& resta
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::Begin("SIM DATA");
+    ImGui::Text("Simulation Timestep: %ld", timestep);
 
     static ImPlotColormap map = ImPlotColormap_Viridis;
     ImPlot::PushColormap(map);
     static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock | ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_NoTickMarks;
     for (int n = 0; n < d.N_SCALAR_FIELDS; n++) {
-        if (ImPlot::BeginPlot("", NULL, NULL, ImVec2(500, 500), ImPlotFlags_NoLegend, axes_flags, axes_flags)) { 
-            ImPlot::PlotHeatmap("DATA", &d.fields[n][0], d.NX, d.NY, iv[n].first, iv[0].second);
+        if (ImPlot::BeginPlot("TEST", NULL, NULL, ImVec2(500, 500), ImPlotAxisFlags_NoDecorations, axes_flags, axes_flags)) { 
+            ImPlot::PlotHeatmap("DATA", d.fields[n].data() ,d.NX, d.NY, iv[n].first, iv[0].second, NULL);
             ImPlot::EndPlot();
         }
+        std::vector<double> test;
+
 
         ImGui::SameLine();
         ImPlot::ShowColormapScale(iv[n].first, iv[n].second, 500);
@@ -152,14 +152,16 @@ void sim_init_window(GLFWwindow* window, SimType& sim_type, SimParams& sim_ps, V
     imgui_render(window);
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space))) {
         init_done = true;
-        sim_ps.NX = sim_dim;
-        sim_ps.NY = sim_dim;
-        sim_ps.N_TIMESTEPS = n_timesteps;
-        sim_ps.DELTA = delta;
-        sim_ps.DELTA_T = delta_t;
-
-        view_ps.timeskip = timeskip;
     }
+
+    sim_ps.NX = sim_dim;
+    sim_ps.NY = sim_dim;
+    sim_ps.N_TIMESTEPS = n_timesteps;
+    sim_ps.DELTA = delta;
+    sim_ps.DELTA_T = delta_t;
+
+    view_ps.timeskip = timeskip;
+
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
         glfwSetWindowShouldClose(window, 1);    
     }
