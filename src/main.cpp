@@ -15,7 +15,7 @@
 #include "concentration_domain.h"
 
 
-// #DEFINE BOUNDARY_PERIODIC
+
 static void sim(GLFWwindow* window, SimType sim_type, SimParams& params, ViewParams& view_ps, std::vector<double>& additional_params) {
     ConcentrationDomain domain(params, additional_params);
     bool restart_sim = false;
@@ -38,7 +38,7 @@ int main() {
         .DELTA_T = 0.0001,
         .N_TIMESTEPS = 20000,
     };
-    
+
     ViewParams view_ps = {
         .XRES = 1200,
         .YRES = 600,

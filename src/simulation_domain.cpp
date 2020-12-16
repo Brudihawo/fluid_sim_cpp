@@ -3,6 +3,9 @@
 #include <memory>
 #include <random>
 
+
+#define BOUNDARY_PERIODIC
+
 SimulationDomain::SimulationDomain(SimParams& p, int n_scalar_fields) :NX(p.NX), NY(p.NY), DELTA(p.DELTA), DELTA_T(p.DELTA_T), N_SCALAR_FIELDS(n_scalar_fields), N_TIMESTEPS(p.N_TIMESTEPS) {
     init();
     std::cout << "Simulation Domain Initialised" << std::endl;
@@ -41,6 +44,7 @@ double SimulationDomain::ddx(std::vector<double>& s, long x, long y) {
         sp = s[idx(x + 1, y)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sp = s[idx(0, y)];
         #else
             return ddx(s, x - 1, y);
         #endif
@@ -48,6 +52,7 @@ double SimulationDomain::ddx(std::vector<double>& s, long x, long y) {
         sm = s[idx(x - 1, y)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sm = s[idx(NX - 1, y)];
         #else
             return ddx(s, x + 1, y);
         #endif
@@ -60,6 +65,7 @@ double SimulationDomain::ddy(std::vector<double>& s, long x, long y) {
         sp = s[idx(x, y + 1)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sp = s[idx(x, 0)];
         #else
             return ddy(s, x, y - 1);
         #endif
@@ -67,6 +73,7 @@ double SimulationDomain::ddy(std::vector<double>& s, long x, long y) {
         sm = s[idx(x, y - 1)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sm = s[idx(x, NY - 1)];
         #else
             return ddy(s, x, y + 1);
         #endif
@@ -79,6 +86,7 @@ double SimulationDomain::d2dx(std::vector<double>& s, long x, long y) {
         sp = s[idx(x + 2, y)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sp = s[idx(x - NX + 2, y)];
         #else
             return 0;
         #endif
@@ -86,6 +94,7 @@ double SimulationDomain::d2dx(std::vector<double>& s, long x, long y) {
         sm = s[idx(x - 2, y)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sm = s[idx(NX - 2 + x, y)];
         #else
             return 0;
         #endif
@@ -98,6 +107,7 @@ double SimulationDomain::d2dy(std::vector<double>& s, long x, long y) {
         sp = s[idx(x, y + 2)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sp = s[idx(x, y - NY + 2)];
         #else
             return 0;
         #endif
@@ -105,6 +115,7 @@ double SimulationDomain::d2dy(std::vector<double>& s, long x, long y) {
         sm = s[idx(x, y - 2)];
     else
         #ifdef BOUNDARY_PERIODIC
+            sm = s[idx(x, NY - 2 + y)];
         #else
             return 0;
         #endif
