@@ -1,5 +1,9 @@
 # 2D-Simulation Framework with live viewing written in C++
+<<<<<<< HEAD
 This is a framework for implementing 2D scalar field evolution algorithms and viewing them in real time using [Dear ImGui](https://github.com/ocornut/imgui) and the plotting library [ImPlot](https://github.com/epezent/implot).
+=======
+This is a framework for implementing boundary conditions in 
+>>>>>>> eacfa42101ff7f704e9370cabb47ef15c4337135
 
 ## Updates
 - Diffusion simulation is working
