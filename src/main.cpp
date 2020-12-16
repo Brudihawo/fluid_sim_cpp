@@ -38,6 +38,7 @@ int main() {
         .DELTA_T = 0.0001,
         .N_TIMESTEPS = 20000,
     };
+    
     ViewParams view_ps = {
         .XRES = 1200,
         .YRES = 600,
