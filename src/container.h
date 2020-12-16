@@ -1,64 +1,43 @@
 #pragma once
 
-typedef struct interval_t {
-    double max;
-    double min;
-} interval;
-
-// Possibly add X, Y coordinates
+/* Domain data container@n 
+double ** fields: Pointer to scalar field array@n
+int N_SCALAR_FIELDS: Number of scalar fields@n
+long NX: Resolution of fields in x@n
+long NY: Resolution of fields in y*/
 typedef struct domain_data_t {
-    const double* u;
-    const double* v;
-    const double* p;
-    const long NX;
-    const long NY;
-} domain_data;
+    double** fields;
+    int N_SCALAR_FIELDS;
+    long NX;
+    long NY;
+} DomainData;
 
+/* Minimum parameters to create simulation@n
+long NX: Resolution in X@n
+long NY: Resolution in Y@n
+double DELTA: Spatial Resolution@n
+double DELTA_T: Timestep@n
+long N_TIMESTEPS: Number of timesteps@n
+int N_SCALAR_FIELS: Number of scalar fields*/ 
 typedef struct sim_params_t {
     long NX;
     long NY;
-    double DELTA_T;
     double DELTA;
+    double DELTA_T;
     long N_TIMESTEPS;
-    double NU;
-    double v_init;
-    int dist_center_init;
-    int timeskip;
-} sim_params;
+    int N_SCALAR_FIELDS;
+} SimParams;
 
-class simulation_domain {
-    private:
-        double* u;
-        double* v;
-        double* p;
-        
-        long NX;
-        long NY;
-        double DELTA;
+/* View Configuration Parameters@n
+XRES: Resolution in X@n
+YRES: Resolution in Y@n
+timeskip: Number of timesteps to calculate between rendered frames*/
+typedef struct view_params_t {
+    int XRES, YRES, timeskip;
+} ViewParams;
 
-        double DELTA_T;
-        long N_TIMESTEPS;
-
-        double NU;
-
-        void init();
-        long idx(long x, long y);
-
-    public:
-        simulation_domain(long nx, long ny, double delta, long n_timesteps, double delta_t, int tskip, double nu);
-        simulation_domain(sim_params& params);
-        ~simulation_domain();
-
-        bool timestep(long t);
-        void smooth(int n_iterations);
-        void add_jitter();
-
-        inline const domain_data get_data() {return {u, v, p, NX, NY};}
-
-        // void set_cell(long x, long y, double p, double u, double v);
-
-        double ddx(double* s, long  x, long  y);
-        double ddy(double* s, long  x, long  y);
-        double d2dx(double* s, long  x, long  y);
-        double d2dy(double* s, long  x, long  y);
+enum SimType {
+    NONE = -1,
+    FLUID_INCOMPRESSIBLE,
+    CONCENTRATION,
 };

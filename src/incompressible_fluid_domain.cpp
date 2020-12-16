@@ -1,26 +1,26 @@
+#include "incompressible_fluid_domain.h"
 #include "container.h"
-#include "discrete_math.h"
 #include <random>
 
-simulation_domain::simulation_domain(long nx, long ny, double delta, long n_timesteps, double delta_t, int tskip, double nu) :NX(ny), NY(ny), DELTA(delta), DELTA_T(delta_t), NU(nu) {
-    init();
-}
+void IncompressibleFluidDomain::init() {
+    // Initialise scalar fields
+    fields = new double*[N_SCALAR_FIELDS];
 
-simulation_domain::simulation_domain(sim_params& p) :NX(p.NX), NY(p.NY), DELTA(p.DELTA), DELTA_T(p.DELTA_T), NU(p.NU) {
-    init();
-}
+    for (int i = 0; i < N_SCALAR_FIELDS; i++) {
+        fields[i] = new double[NX * NY];
+    }
 
-void simulation_domain::init() {
-    u = new double[NX * NY];
-    v = new double[NX * NY];
-    p = new double[NX * NY];
+    u = fields[0];
+    v = fields[1];
+    p = fields[2];
 
     // INIT AS ZERO
-    for (int index = 0; index < NX * NY; index++) {
-        u[index] = 0.0;
-        v[index] = 0.0;
-        p[index] = 0.0;
+    for(int i = 0; i < N_SCALAR_FIELDS; i++) {
+        for (int index = 0; index < NX * NY; index++) {
+            fields[i][index] = 0.0;
+        }
     }
+
     double p_max = 2;
     for (int i = 0; i < NX; i++) {
         for (int j = 0; j < NY; j++) {
@@ -28,29 +28,18 @@ void simulation_domain::init() {
         }
     }
 }
-
-simulation_domain::~simulation_domain() {
-    delete[] u;
-    delete[] v;
-    delete[] p;
+IncompressibleFluidDomain::IncompressibleFluidDomain(SimParams& p, double* extra_params): SimulationDomain(p), NU(extra_params[0]) {
+    init();
 }
 
-bool simulation_domain::timestep(long t) {
-// FIXME: USE https://de.wikipedia.org/wiki/Navier-Stokes-Gleichungen#Navier-Stokes-Gleichungen_für_kompressible_Fluide
-//        AND https://de.wikipedia.org/wiki/Euler-Gleichungen_(Strömungsmechanik)
-//        for calculation of new flow field :) Also, learn to read :P
-    if (t < N_TIMESTEPS) {
-        for (int j = 0; j < NY; j++) {
-            for (int i = 0; i < NX; i++) {
-                u[idx(i, j)] += DELTA_T * ( NU * (d2dx(u, i, j) + d2dy(u, i, j)) - u[idx(i, j)] * ddx(u, i, j) - v[idx(i, j)] * ddy(u, i, j) - ddx(p, i, j));
-                v[idx(i, j)] += DELTA_T * ( NU * (d2dx(v, i, j) + d2dy(v, i, j)) - u[idx(i, j)] * ddx(v, i, j) - v[idx(i, j)] * ddy(v, i, j) - ddy(p, i, j));
-            }
-        }
+IncompressibleFluidDomain::~IncompressibleFluidDomain() {
+    for (int i = 0; i < N_SCALAR_FIELDS; i++) {
+        delete[] fields[i];
     }
-    return t < N_TIMESTEPS;
+    delete[] fields;
 }
 
-void simulation_domain::smooth(int n_iterations) {
+void IncompressibleFluidDomain::smooth(int n_iterations) {
     double tmp[NX * NY];
     double* fields[3] = {u, v, p};
 
@@ -103,7 +92,7 @@ void simulation_domain::smooth(int n_iterations) {
     }
 }
 
-void simulation_domain::add_jitter() {
+void IncompressibleFluidDomain::add_jitter() {
     std::random_device r;
     std::seed_seq seeds{r(), r(), r(), r(), r(), r(), r(), r()};
     std::normal_distribution<double> dist(0.0, 1);
@@ -115,82 +104,18 @@ void simulation_domain::add_jitter() {
     }
 }
 
-long simulation_domain::idx(long x, long y) {
-    return x + y * NX;
-}
 
-double simulation_domain::ddx(double* s, long x, long y) {
-    double sp, sm;
-    if (x < NX - 1)
-        sp = s[idx(x + 1, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return ddx(s, x - 1, y);
-        #endif
-    if (x > 0)
-        sm = s[idx(x - 1, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return ddx(s, x + 1, y);
-        #endif
-    return (sp - sm) / DELTA; 
-}
-
-double simulation_domain::ddy(double* s, long x, long y) {
-    double sp, sm;
-    if (y < NY - 1)
-        sp = s[idx(x, y + 1)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return ddy(s, x, y - 1);
-        #endif
-    if (y > 0)
-        sm = s[idx(x, y - 1)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return ddy(s, x, y + 1);
-        #endif
-    return (sp - sm) / DELTA;
-}
-
-double simulation_domain::d2dx(double* s, long x, long y) {
-    double sp, sm;
-    if (x < NX - 2)
-        sp = s[idx(x + 2, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return 0;
-        #endif
-    if (x > 1)
-        sm = s[idx(x - 2, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return 0;
-        #endif
-    return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
-}
-
-double simulation_domain::d2dy(double* s, long x, long y) {
-    double sp, sm;
-    if (y < NY - 2)
-        sp = s[idx(x, y + 2)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return 0;
-        #endif
-    if (y > 1)
-        sm = s[idx(x, y - 2)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-        #else
-            return 0;
-        #endif
-    return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
+bool IncompressibleFluidDomain::timestep(long t) {
+// FIXME: USE https://de.wikipedia.org/wiki/Navier-Stokes-Gleichungen#Navier-Stokes-Gleichungen_für_kompressible_Fluide
+//        AND https://de.wikipedia.org/wiki/Euler-Gleichungen_(Strömungsmechanik)
+//        for calculation of new flow field :) Also, learn to read :P
+    if (t < N_TIMESTEPS) {
+        for (int j = 0; j < NY; j++) {
+            for (int i = 0; i < NX; i++) {
+                u[idx(i, j)] += DELTA_T * ( NU * (d2dx(u, i, j) + d2dy(u, i, j)) - u[idx(i, j)] * ddx(u, i, j) - v[idx(i, j)] * ddy(u, i, j) - ddx(p, i, j));
+                v[idx(i, j)] += DELTA_T * ( NU * (d2dx(v, i, j) + d2dy(v, i, j)) - u[idx(i, j)] * ddx(v, i, j) - v[idx(i, j)] * ddy(v, i, j) - ddy(p, i, j));
+            }
+        }
+    }
+    return t < N_TIMESTEPS;
 }
