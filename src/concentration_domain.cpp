@@ -9,6 +9,7 @@ void ConcentrationDomain::init() {
 }
 
 ConcentrationDomain::ConcentrationDomain(SimParams& p, std::vector<double>& d): SimulationDomain(p, 1), D(d[0]), c(fields[0]), old_c(old[0]) {
+    field_descriptors.push_back("Concentration");
     init();
 }
 

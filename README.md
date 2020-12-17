@@ -6,9 +6,8 @@ This is a framework for implementing 2D scalar field evolution algorithms and vi
 - Currently, boundary conditions 
 
 ## TODOS:
-1. Implement field descriptors
+1. Implement swapping pointers instead of copying old scalar field data for improved performance
 2. Implement different boundary conditions
-3. Improve Simulation Init GUI
 3. Update Documentation for how to implement class
 3. Implement serialization
 

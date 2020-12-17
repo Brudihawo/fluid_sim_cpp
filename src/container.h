@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 enum SimType {
     NONE = -1,
@@ -23,6 +24,7 @@ long NX: Resolution of fields in x@n
 long NY: Resolution of fields in y*/
 typedef struct DomainData{ 
     std::vector<std::vector<double>>& fields;
+    std::vector<std::string>& field_descriptors;
     int N_SCALAR_FIELDS;
     long NX;
     long NY;

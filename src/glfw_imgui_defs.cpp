@@ -75,21 +75,26 @@ void display(GLFWwindow *window, long timestep, const DomainData& d, bool& resta
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    if (d.N_SCALAR_FIELDS > 1) 
+        ImGui::SetNextWindowSize(ImVec2(1200, 700));
+    else 
+        ImGui::SetNextWindowSize(ImVec2(600, 700));
     ImGui::Begin("SIM DATA");
     ImGui::Text("Simulation Timestep: %ld", timestep);
 
     static ImPlotColormap map = ImPlotColormap_Viridis;
     ImPlot::PushColormap(map);
-    static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock | ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_NoTickMarks;
+    static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock | ImPlotAxisFlags_NoGridLines, ImPlotAxesFlags_NoTickMarks;
     for (int n = 0; n < d.N_SCALAR_FIELDS; n++) {
-        if (ImPlot::BeginPlot("TEST", NULL, NULL, ImVec2(500, 500), ImPlotAxisFlags_NoDecorations, axes_flags, axes_flags)) { 
-            ImPlot::PlotHeatmap("DATA", d.fields[n].data() ,d.NX, d.NY, iv[n].first, iv[0].second, NULL);
+        if (ImPlot::BeginPlot(d.field_descriptors[n].c_str(), NULL, NULL, ImVec2(500, 500), ImPlotFlags_NoLegend, axes_flags, axes_flags)) {
+            ImPlot::PlotHeatmap("DATA", d.fields[n].data(),d.NX, d.NY, iv[n].first, iv[0].second, NULL);
             ImPlot::EndPlot();
         }
         
         ImGui::SameLine();
         ImPlot::ShowColormapScale(iv[n].first, iv[n].second, 500);
-        if (n % 2 == 1) {
+        if (!(n % 2)) {
             ImGui::SameLine();
         }
     }
