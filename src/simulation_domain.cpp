@@ -45,37 +45,37 @@ long SimulationDomain::idx(long x, long y) {
 // Spatial derivative in respect to x
 double SimulationDomain::ddx(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[neighbor_cell_index(x, y, +1, 0)];
-    sm = s[neighbor_cell_index(x, y, -1, 0)];
+    sp = s[idx(x, y, +1, 0)];
+    sm = s[idx(x, y, -1, 0)];
     return (sp - sm) / DELTA; 
 }
 
 // Spatial derivative in respect to y
 double SimulationDomain::ddy(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[neighbor_cell_index(x, y, 0, +1)];
-    sm = s[neighbor_cell_index(x, y, 0, -1)];
+    sp = s[idx(x, y, 0, +1)];
+    sm = s[idx(x, y, 0, -1)];
     return (sp - sm) / DELTA;
 }
 
 // Second spatial derivative in respect to x
 double SimulationDomain::d2dx(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[neighbor_cell_index(x, y, +2, 0)];
-    sm = s[neighbor_cell_index(x, y, -2, 0)];
+    sp = s[idx(x, y, +2, 0)];
+    sm = s[idx(x, y, -2, 0)];
     return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
 }
 
 // Second spatial derivative in respect to y
 double SimulationDomain::d2dy(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[neighbor_cell_index(x, y, 0, +2)];
-    sm = s[neighbor_cell_index(x, y, 0, -2)];
+    sp = s[idx(x, y, 0, +2)];
+    sm = s[idx(x, y, 0, -2)];
     return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
 }
 
 // Handle boundary types for neighboring cell indices
-long SimulationDomain::neighbor_cell_index(long x, long y, int xoff, int yoff) {
+long SimulationDomain::idx(long x, long y, int xoff, int yoff) {
     if (b_type[0] == BoundaryType::PERIODIC) {
         if (x + xoff > NX - 1) {
             x = x - NX + 1 + xoff;
@@ -130,17 +130,17 @@ void SimulationDomain::smooth_gaussian(int field_index, int n_iterations) {
         for (long j = 1; j < NY - 1; j++) {
             for (long i = 1; i < NX - 1; i++) {
                 old[0][idx(i, j)] = 
-                    (1.0 * s[neighbor_cell_index(i, j, -1, -1)] +  // Top Row
-                     2.0 * s[neighbor_cell_index(i, j,  0, -1)] +
-                     1.0 * s[neighbor_cell_index(i, j,  1, -1)] +
+                    (1.0 * s[idx(i, j, -1, -1)] +  // Top Row
+                     2.0 * s[idx(i, j,  0, -1)] +
+                     1.0 * s[idx(i, j,  1, -1)] +
 
-                     2.0 * s[neighbor_cell_index(i, j, -1,  0)] +  // Center Row
-                     4.0 * s[neighbor_cell_index(i, j,  0,  0)] +
-                     2.0 * s[neighbor_cell_index(i, j,  1,  0)] +
+                     2.0 * s[idx(i, j, -1,  0)] +  // Center Row
+                     4.0 * s[idx(i, j,  0,  0)] +
+                     2.0 * s[idx(i, j,  1,  0)] +
 
-                     1.0 * s[neighbor_cell_index(i, j, -1,  1)] +  // Bottom Row
-                     2.0 * s[neighbor_cell_index(i, j,  0,  1)] +
-                     1.0 * s[neighbor_cell_index(i, j,  1,  1)]) / 16.0;
+                     1.0 * s[idx(i, j, -1,  1)] +  // Bottom Row
+                     2.0 * s[idx(i, j,  0,  1)] +
+                     1.0 * s[idx(i, j,  1,  1)]) / 16.0;
             }
         }
         for (long j = 0; j < NY; j++) {
