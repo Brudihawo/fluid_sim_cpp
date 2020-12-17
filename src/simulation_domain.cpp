@@ -6,9 +6,13 @@
 
 #define BOUNDARY_PERIODIC
 
-SimulationDomain::SimulationDomain(SimParams& p, int n_scalar_fields) :NX(p.NX), NY(p.NY), DELTA(p.DELTA), DELTA_T(p.DELTA_T), N_SCALAR_FIELDS(n_scalar_fields), N_TIMESTEPS(p.N_TIMESTEPS) {
+SimulationDomain::SimulationDomain(SimParams& p, int n_scalar_fields) 
+    :NX(p.NX), NY(p.NY),
+    DELTA(p.DELTA), DELTA_T(p.DELTA_T),
+    N_SCALAR_FIELDS(n_scalar_fields), N_TIMESTEPS(p.N_TIMESTEPS) {
+    b_type[0] = p.b_type[0];
+    b_type[1] = p.b_type[1];
     init();
-    std::cout << "Simulation Domain Initialised" << std::endl;
 }
 
 void SimulationDomain::init() {
@@ -38,89 +42,78 @@ long SimulationDomain::idx(long x, long y) {
     return x + y * NX;
 }
 
+// Spatial derivative in respect to x
 double SimulationDomain::ddx(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    if (x < NX - 1)
-        sp = s[idx(x + 1, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sp = s[idx(0, y)];
-        #else
-            return ddx(s, x - 1, y);
-        #endif
-    if (x > 0)
-        sm = s[idx(x - 1, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sm = s[idx(NX - 1, y)];
-        #else
-            return ddx(s, x + 1, y);
-        #endif
+    sp = s[neighbor_cell_index(x, y, +1, 0)];
+    sm = s[neighbor_cell_index(x, y, -1, 0)];
     return (sp - sm) / DELTA; 
 }
 
+// Spatial derivative in respect to y
 double SimulationDomain::ddy(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    if (y < NY - 1)
-        sp = s[idx(x, y + 1)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sp = s[idx(x, 0)];
-        #else
-            return ddy(s, x, y - 1);
-        #endif
-    if (y > 0)
-        sm = s[idx(x, y - 1)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sm = s[idx(x, NY - 1)];
-        #else
-            return ddy(s, x, y + 1);
-        #endif
+    sp = s[neighbor_cell_index(x, y, 0, +1)];
+    sm = s[neighbor_cell_index(x, y, 0, -1)];
     return (sp - sm) / DELTA;
 }
 
+// Second spatial derivative in respect to x
 double SimulationDomain::d2dx(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    if (x < NX - 2)
-        sp = s[idx(x + 2, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sp = s[idx(x - NX + 2, y)];
-        #else
-            return 0;
-        #endif
-    if (x > 1)
-        sm = s[idx(x - 2, y)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sm = s[idx(NX - 2 + x, y)];
-        #else
-            return 0;
-        #endif
+    sp = s[neighbor_cell_index(x, y, +2, 0)];
+    sm = s[neighbor_cell_index(x, y, -2, 0)];
     return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
 }
 
+// Second spatial derivative in respect to y
 double SimulationDomain::d2dy(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    if (y < NY - 2)
-        sp = s[idx(x, y + 2)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sp = s[idx(x, y - NY + 2)];
-        #else
-            return 0;
-        #endif
-    if (y > 1)
-        sm = s[idx(x, y - 2)];
-    else
-        #ifdef BOUNDARY_PERIODIC
-            sm = s[idx(x, NY - 2 + y)];
-        #else
-            return 0;
-        #endif
+    sp = s[neighbor_cell_index(x, y, 0, +2)];
+    sm = s[neighbor_cell_index(x, y, 0, -2)];
     return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
 }
+
+// Handle boundary types for neighboring cell indices
+long SimulationDomain::neighbor_cell_index(long x, long y, int xoff, int yoff) {
+    if (b_type[0] == BoundaryType::PERIODIC) {
+        if (x + xoff > NX - 1) {
+            x = x - NX + 1 + xoff;
+        } else if (x + xoff < 0) {
+            x = NX + x + xoff;
+        } else { 
+            x += xoff;
+        }
+    } else if (b_type[0] == BoundaryType::CONSTANT_VALUE) {
+        if (x + xoff > NX - 1) {
+            x = NX - 1;
+        } else if (x + xoff < 0) { 
+            x = 0;
+        } else {
+            x += xoff;
+        }
+    }
+
+    if (b_type[1] == BoundaryType::PERIODIC) {
+        if (y + yoff > NY - 1) {
+            y = y - NY + 1 + yoff;
+        } else if (y + yoff < 0) {
+            y = NY + y + yoff;
+        } else {
+            y += yoff;
+        }
+    } else if (b_type[1] == BoundaryType::CONSTANT_VALUE) {
+        if (y + yoff > NY - 1) {
+            y = NY - 1;
+        } else if (y + yoff < 0) {
+            y = 0;
+        } else {
+            y += yoff;
+        }
+    }
+    return idx(x, y);
+}
+
 void SimulationDomain::add_noise(int field_index, double sigma) {
     std::random_device r;
     std::seed_seq seeds{r(), r(), r(), r(), r(), r(), r(), r()};
@@ -137,44 +130,19 @@ void SimulationDomain::smooth_gaussian(int field_index, int n_iterations) {
         for (long j = 1; j < NY - 1; j++) {
             for (long i = 1; i < NX - 1; i++) {
                 old[0][idx(i, j)] = 
-                            (1.0 * s[idx(i - 1, j - 1)] + 2.0 * s[idx(i, j - 1)] + 1.0 * s[idx(i + 1, j - 1)] +
-                            2.0 * s[idx(i - 1, j    )] + 4.0 * s[idx(i, j    )] + 2.0 * s[idx(i + 1, j    )] + 
-                            1.0 * s[idx(i - 1, j + 1)] + 2.0 * s[idx(i, j + 1)] + 1.0 * s[idx(i + 1, j + 1)]) / 16.0;
+                    (1.0 * s[neighbor_cell_index(i, j, -1, -1)] +  // Top Row
+                     2.0 * s[neighbor_cell_index(i, j,  0, -1)] +
+                     1.0 * s[neighbor_cell_index(i, j,  1, -1)] +
+
+                     2.0 * s[neighbor_cell_index(i, j, -1,  0)] +  // Center Row
+                     4.0 * s[neighbor_cell_index(i, j,  0,  0)] +
+                     2.0 * s[neighbor_cell_index(i, j,  1,  0)] +
+
+                     1.0 * s[neighbor_cell_index(i, j, -1,  1)] +  // Bottom Row
+                     2.0 * s[neighbor_cell_index(i, j,  0,  1)] +
+                     1.0 * s[neighbor_cell_index(i, j,  1,  1)]) / 16.0;
             }
         }
-
-        for (int j = 1; j < NY - 1; j++) {
-            old[field_index][idx(0, j)] = 
-                            (2.0 * s[idx(0, j - 1)] + 1.0 * s[idx(1, j - 1)] +
-                            4.0 * s[idx(0, j    )] + 2.0 * s[idx(1, j    )] + 
-                            2.0 * s[idx(0, j + 1)] + 1.0 * s[idx(1, j + 1)]) / 12.0;
-
-            old[field_index][idx(NY - 1, j)] = 
-                            (1.0 * s[idx(NY - 2, j - 1)] + 2.0 * s[idx(NY - 1, j - 1)] +
-                            2.0 * s[idx(NY - 2, j    )] + 4.0 * s[idx(NY - 1, j    )] + 
-                            1.0 * s[idx(NY - 2, j + 1)] + 2.0 * s[idx(NY - 1, j + 1)]) / 12.0;
-        }
-        
-        for(int i = 1; i < NX - 1; i++){
-            old[field_index][idx(i, 0)] = (2.0 * s[idx(i - 1, 0)] + 4.0 * s[idx(i, 0)] + 2.0 * s[idx(i + 1, 0)] + 
-                            1.0 * s[idx(i - 1, 1)] + 2.0 * s[idx(i, 1)] + 1.0 * s[idx(i + 1, 1)]) / 12.0;
-
-            old[field_index][idx(i, NY - 1)] = (1.0 * s[idx(i - 1, NX - 2)] + 2.0 * s[idx(i, NX - 2)] + 1.0 * s[idx(i + 1, NX - 2)] +
-                                2.0 * s[idx(i - 1, NX - 1)] + 4.0 * s[idx(i, NX - 1)] + 2.0 * s[idx(i + 1, NX - 1)]) / 12.0;
-        }
-
-        old[field_index][idx(0, 0)] = (4.0 * s[idx(0, 0)] + 2.0 * s[idx(1, 0)] +
-                        2.0 * s[idx(0, 1)] + 1.0 * s[idx(1, 1)]) / 9.0;
-
-        old[field_index][idx(NX - 1, 0)] = (4.0 * s[idx(NX - 1, 0)] + 2.0 * s[idx(NX - 1, 1)] +
-                            2.0 * s[idx(NX - 2, 0)] + 1.0 * s[idx(NX - 2, 1)]) / 9.0;
-
-        old[field_index][idx(0, NY - 1)] = (4.0 * s[idx(0, NY - 1)] + 2.0 * s[idx(0, NY - 2)] +
-                            2.0 * s[idx(1, NY - 1)] + 1.0 * s[idx(1, NY - 2)]) / 9.0;
-                            
-        old[field_index][idx(NX - 1, NY - 1)] = (4.0 * s[idx(NX - 1, NY - 1)] + 2.0 * s[idx(NX - 1, NY - 2)] +
-                                2.0 * s[idx(NX - 2, NY - 1)] + 1.0 * s[idx(NX - 2, NY - 2)]) / 7.0;
-
         for (long j = 0; j < NY; j++) {
             for (long i = 0; i < NX; i++) {
                 s[idx(i, j)] = old[field_index][idx(i, j)];

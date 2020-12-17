@@ -123,6 +123,7 @@ void sim_init_window(GLFWwindow* window, SimType& sim_type, SimParams& sim_ps, V
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    // TODO: Improve GUI
     ImGui::Begin("Sim2D - Initialisation");
     {
         ImGui::InputScalar("Simulation Domain Size", ImGuiDataType_S64, &sim_dim, NULL, NULL, "%d");

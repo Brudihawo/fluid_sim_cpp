@@ -37,6 +37,7 @@ int main() {
         .DELTA = 1.0,
         .DELTA_T = 0.0001,
         .N_TIMESTEPS = 20000,
+        .b_type = {BoundaryType::PERIODIC, BoundaryType::PERIODIC},
     };
 
     ViewParams view_ps = {
