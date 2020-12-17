@@ -8,6 +8,8 @@ This is a framework for implementing 2D scalar field evolution algorithms and vi
 ## TODOS:
 1. Implement field descriptors
 2. Implement different boundary conditions
+3. Improve Simulation Init GUI
+3. Update Documentation for how to implement class
 3. Implement serialization
 
 --- 
@@ -67,3 +69,7 @@ bool ConcentrationDomain::timestep(long t) {
     return t < N_TIMESTEPS;
 }
 ```
+
+This domains `init()` function creates half of the domain with c=1, the other half with c=0. A simulation frame can look something like this:
+
+![Simulation Frame](img/diffusion_171220.png)
