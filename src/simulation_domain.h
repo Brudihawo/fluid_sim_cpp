@@ -22,7 +22,7 @@ class SimulationDomain {
         
     public:
         SimulationDomain(SimParams& p, int n_scalar_fields);
-        virtual ~SimulationDomain() = 0;
+        virtual ~SimulationDomain();
 
         virtual bool timestep(long t) = 0;
         inline DomainData get_data() {return {fields, N_SCALAR_FIELDS, NX, NY};} 

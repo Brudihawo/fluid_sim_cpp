@@ -15,15 +15,14 @@
 #include "concentration_domain.h"
 
 
-
-static void sim(GLFWwindow* window, SimType sim_type, SimParams& params, ViewParams& view_ps, std::vector<double>& additional_params) {
+static void sim(GLFWwindow* window, SimType& sim_type, SimParams& params, ViewParams& view_ps, std::vector<double>& additional_params) {
     SimulationDomain* domain;
     if (sim_type == SimType::CONCENTRATION)
         domain = new ConcentrationDomain(params, additional_params);
     else if (sim_type == SimType::FLUID_INCOMPRESSIBLE)
-        IncompressibleFluidDomain domain(params, additional_params);
+        domain = new IncompressibleFluidDomain(params, additional_params);
     bool restart_sim = false;
-
+    
     // SIMULATION
     for (long t = 0; domain->timestep(t); t++) {
         if (t % view_ps.timeskip == 0) {

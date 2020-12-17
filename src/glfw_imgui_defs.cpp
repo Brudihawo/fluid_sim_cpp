@@ -86,9 +86,7 @@ void display(GLFWwindow *window, long timestep, const DomainData& d, bool& resta
             ImPlot::PlotHeatmap("DATA", d.fields[n].data() ,d.NX, d.NY, iv[n].first, iv[0].second, NULL);
             ImPlot::EndPlot();
         }
-        std::vector<double> test;
-
-
+        
         ImGui::SameLine();
         ImPlot::ShowColormapScale(iv[n].first, iv[n].second, 500);
         if (n % 2 == 1) {
@@ -158,6 +156,7 @@ void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, Sim
                         additional_values[0] = d;
                     }
                 sim_type = SimType::CONCENTRATION;
+                sim_ps.N_SCALAR_FIELDS = 1;
                 ImGui::EndChild();
             }
         } else if (current_item == "Incompressible Fluid") {
@@ -171,6 +170,7 @@ void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, Sim
                     } else {
                         additional_values[0] = nu;
                     }
+                sim_ps.N_SCALAR_FIELDS = 2;
                 sim_type = SimType::FLUID_INCOMPRESSIBLE;
                 ImGui::EndChild();
             }
