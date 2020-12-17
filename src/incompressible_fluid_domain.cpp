@@ -11,6 +11,8 @@ void IncompressibleFluidDomain::init() {
     // }
 }
 IncompressibleFluidDomain::IncompressibleFluidDomain(SimParams& p, std::vector<double>& extra_params): SimulationDomain(p, 2), NU(extra_params[0]), u(fields[0]), v(fields[1]), old_u(old[0]), old_v(old[1]) {
+    field_descriptors.push_back("Velocity in X");
+    field_descriptors.push_back("Velocity in Y");
     init();
 }
 

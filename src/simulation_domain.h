@@ -1,6 +1,7 @@
 #pragma once
 #include "container.h"
 #include <vector>
+#include <string>
 
 class SimulationDomain {
     protected:
@@ -17,6 +18,8 @@ class SimulationDomain {
 
         std::vector<double> extra_params;
 
+        std::vector<std::string> field_descriptors;
+
         long idx(long x, long y);
         void init();
         
@@ -25,7 +28,7 @@ class SimulationDomain {
         virtual ~SimulationDomain();
 
         virtual bool timestep(long t) = 0;
-        inline DomainData get_data() {return {fields, N_SCALAR_FIELDS, NX, NY};} 
+        inline DomainData get_data() {return {fields, field_descriptors, N_SCALAR_FIELDS, NX, NY};} 
 
         double ddx(std::vector<double>& s, long  x, long  y);
         double ddy(std::vector<double>& s, long  x, long  y);
