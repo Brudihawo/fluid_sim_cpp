@@ -17,13 +17,17 @@
 
 
 static void sim(GLFWwindow* window, SimType sim_type, SimParams& params, ViewParams& view_ps, std::vector<double>& additional_params) {
-    ConcentrationDomain domain(params, additional_params);
+    SimulationDomain* domain;
+    if (sim_type == SimType::CONCENTRATION)
+        domain = new ConcentrationDomain(params, additional_params);
+    else if (sim_type == SimType::FLUID_INCOMPRESSIBLE)
+        IncompressibleFluidDomain domain(params, additional_params);
     bool restart_sim = false;
 
     // SIMULATION
-    for (long t = 0; domain.timestep(t); t++) {
+    for (long t = 0; domain->timestep(t); t++) {
         if (t % view_ps.timeskip == 0) {
-            display(window, t, domain.get_data(), restart_sim);
+            display(window, t, domain->get_data(), restart_sim);
         }
         if (glfwWindowShouldClose(window) | restart_sim) break;
     }
@@ -49,7 +53,7 @@ int main() {
     SimType sim_type = SimType::NONE;
 
     // FIXME: Additional params hardcoded
-    std::vector<double> additional_params = {1.0};
+    std::vector<double> additional_params;
 
     GLFWwindow* window = glfw_imgui_init(view_ps);
     if (window == nullptr) return -1;
@@ -57,7 +61,7 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         bool init_done = false;
         while (!init_done & !glfwWindowShouldClose(window)) {
-            sim_init_window(window, sim_type, sim_ps, view_ps, init_done);
+            sim_init_window(window, init_done, sim_type, sim_ps, view_ps, additional_params);
         }
         if (init_done) {
             sim(window, sim_type, sim_ps, view_ps, additional_params);

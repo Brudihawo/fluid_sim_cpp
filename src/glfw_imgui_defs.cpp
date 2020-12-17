@@ -109,13 +109,12 @@ void display(GLFWwindow *window, long timestep, const DomainData& d, bool& resta
     }
 }
 
-void sim_init_window(GLFWwindow* window, SimType& sim_type, SimParams& sim_ps, ViewParams view_ps, bool& init_done) {
+void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, SimParams& sim_ps, ViewParams& view_ps, std::vector<double>& additional_values) {
     long sim_dim = sim_ps.NX;
     double delta = sim_ps.DELTA;
     double delta_t = sim_ps.DELTA_T;
     long n_timesteps = sim_ps.N_TIMESTEPS;
     int n_scalar_fields = sim_ps.N_SCALAR_FIELDS;
-
     int timeskip = view_ps.timeskip;
 
     glfwPollEvents();
@@ -124,6 +123,7 @@ void sim_init_window(GLFWwindow* window, SimType& sim_type, SimParams& sim_ps, V
     ImGui::NewFrame();
 
     // TODO: Improve GUI
+    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Once);
     ImGui::Begin("Sim2D - Initialisation");
     {
         ImGui::InputScalar("Simulation Domain Size", ImGuiDataType_S64, &sim_dim, NULL, NULL, "%d");
@@ -133,27 +133,60 @@ void sim_init_window(GLFWwindow* window, SimType& sim_type, SimParams& sim_ps, V
 
         ImGui::InputInt("Timeskip", &timeskip, 1, 100);
 
-        if (sim_type == SimType::CONCENTRATION) {
-            // TODO: Input options for concentration simulation
+        static const char* current_item = NULL;
+        if (ImGui::BeginCombo("Simulation Type", current_item)) {
+            const char* items[] = {"Concentration", "Incompressible Fluid" };
+            for (const char* item: items) {
+                bool is_selected = (current_item == item);
+                if (ImGui::Selectable(item, is_selected))
+                    current_item = item;
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
         }
 
-        if (sim_type == SimType::FLUID_INCOMPRESSIBLE) {
-            // TODO: Input options for incompressible fluid simulation
-        }
-
-        if (ImGui::Button("Concentration")) {
-            sim_type = SimType::CONCENTRATION;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Incompressible Fluid")) {
-            sim_type = SimType::FLUID_INCOMPRESSIBLE;
+        if (current_item == "Concentration") {
+            if (ImGui::BeginChild("ConcDomainOpts", ImVec2(500, 30))) {
+                    double d = 1.0;
+                    if (additional_values.size() > 0)
+                        d = additional_values[0];
+                    ImGui::InputDouble("Diffusion Coefficient", &d, 0.0001, 0.001);
+                    if (additional_values.size() < 1) {
+                        additional_values.push_back(d);
+                    } else {
+                        additional_values[0] = d;
+                    }
+                sim_type = SimType::CONCENTRATION;
+                ImGui::EndChild();
+            }
+        } else if (current_item == "Incompressible Fluid") {
+            if (ImGui::BeginChild("IncFlDomainOpts", ImVec2(500, 30))) {
+                    double nu = 1.0;
+                    if (additional_values.size() > 0)
+                        nu = additional_values[0];
+                    ImGui::InputDouble("Kinematic Viscosity", &nu, 0.0001, 0.001);
+                    if (additional_values.size() < 1) {
+                        additional_values.push_back(nu);
+                    } else {
+                        additional_values[0] = nu;
+                    }
+                sim_type = SimType::FLUID_INCOMPRESSIBLE;
+                ImGui::EndChild();
+            }
         }
     }
-    ImGui::End();
-    imgui_render(window);
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space))) {
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space))
+        || ImGui::Button("Begin")) {
         init_done = true;
     }
+
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
+        glfwSetWindowShouldClose(window, 1);    
+    }
+    
+    ImGui::End();
+    imgui_render(window);
 
     sim_ps.NX = sim_dim;
     sim_ps.NY = sim_dim;
@@ -162,8 +195,4 @@ void sim_init_window(GLFWwindow* window, SimType& sim_type, SimParams& sim_ps, V
     sim_ps.DELTA_T = delta_t;
 
     view_ps.timeskip = timeskip;
-
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
-        glfwSetWindowShouldClose(window, 1);    
-    }
 }
