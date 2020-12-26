@@ -20,14 +20,10 @@ void SimulationDomain::init() {
     old.reserve(N_SCALAR_FIELDS);
 
     for (int n = 0; n < N_SCALAR_FIELDS; n++) {
-        fields.push_back(std::vector<double>(NX * NY));
-        fields[n].reserve(NX * NY);
-        old.push_back(std::vector<double>(NX * NY));
-        old[n].reserve(NX * NY);
-        for (int i = 0; i < NX * NY; i++) {
-            fields[n].push_back(0.0);
-            old[n].push_back(0.0);
-        }
+        fields.push_back(std::vector<double>((double)NX * (double)NY));
+        old.push_back(std::vector<double>((double)NX * (double)NY));
+        std::fill(fields[n].begin(), fields[n].end(), 0.0);
+        std::fill(old[n].begin(), old[n].end(), 0.0);
     }
 }
 
@@ -47,7 +43,7 @@ double SimulationDomain::ddx(std::vector<double>& s, long x, long y) {
     double sp, sm;
     sp = s[idx(x, y, +1, 0)];
     sm = s[idx(x, y, -1, 0)];
-    return (sp - sm) / DELTA; 
+    return (sp - sm) / (2 * DELTA); 
 }
 
 // Spatial derivative in respect to y
@@ -55,7 +51,7 @@ double SimulationDomain::ddy(std::vector<double>& s, long x, long y) {
     double sp, sm;
     sp = s[idx(x, y, 0, +1)];
     sm = s[idx(x, y, 0, -1)];
-    return (sp - sm) / DELTA;
+    return (sp - sm) / ( 2 * DELTA);
 }
 
 // Second spatial derivative in respect to x
@@ -63,7 +59,7 @@ double SimulationDomain::d2dx(std::vector<double>& s, long x, long y) {
     double sp, sm;
     sp = s[idx(x, y, +2, 0)];
     sm = s[idx(x, y, -2, 0)];
-    return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
+    return (sp + sm - 2 * s[idx(x, y)]) / (4 * DELTA * DELTA);
 }
 
 // Second spatial derivative in respect to y
@@ -71,7 +67,7 @@ double SimulationDomain::d2dy(std::vector<double>& s, long x, long y) {
     double sp, sm;
     sp = s[idx(x, y, 0, +2)];
     sm = s[idx(x, y, 0, -2)];
-    return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
+    return (sp + sm - 2 * s[idx(x, y)]) / (4 * DELTA * DELTA);
 }
 
 // Handle boundary types for neighboring cell indices
@@ -143,10 +139,6 @@ void SimulationDomain::smooth_gaussian(int field_index, int n_iterations) {
                      1.0 * s[idx(i, j,  1,  1)]) / 16.0;
             }
         }
-        for (long j = 0; j < NY; j++) {
-            for (long i = 0; i < NX; i++) {
-                s[idx(i, j)] = old[field_index][idx(i, j)];
-            }
-        }
+        s.swap(old[field_index]);
     }
 }

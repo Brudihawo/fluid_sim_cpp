@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 3.19)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-set(CMAKE_BUILD_TYPE Debug)
-
-set(TOP_LIB_DIR C:/Users/hawoh/workspace/libraries)
-
+cmake_minimum_required(VERSION 3.15)
 project(Sim2D)
+set(TOP_LIB_DIR C:/Users/hawoh/workspace/libraries)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 add_executable(Sim2D "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
 add_subdirectory(src)
 add_subdirectory(res)
+
+set(CXX_STANDARD 11)
+set(CXX_STANDARD_REQUIRED ON)
 
 # khr
 set(khr_DIR "${TOP_LIB_DIR}/khr")
@@ -32,7 +32,9 @@ target_link_libraries(Sim2D implot)
 
 # src
 target_include_directories(Sim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src")
-target_sources(Sim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src/simulation_domain.cpp"
+
+target_sources(Sim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src/glfw_imgui_defs.cpp"
+                            "${CMAKE_CURRENT_LIST_DIR}/src/simulation_domain.cpp"
                             "${CMAKE_CURRENT_LIST_DIR}/src/concentration_domain.cpp"
                             "${CMAKE_CURRENT_LIST_DIR}/src/incompressible_fluid_domain.cpp")
 get_target_property(Sim2D_SOURCES Sim2D SOURCES)

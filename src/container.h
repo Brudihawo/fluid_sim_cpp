@@ -2,13 +2,13 @@
 #include <vector>
 #include <string>
 
-enum SimType {
+enum class SimType {
     NONE = -1,
     FLUID_INCOMPRESSIBLE,
     CONCENTRATION,
 };
 
-enum BoundaryType {
+enum class BoundaryType {
     INVALID = -1,
     PERIODIC,
     CONSTANT_VALUE,

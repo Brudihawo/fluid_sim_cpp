@@ -1,6 +1,12 @@
+#include "glad/gl.h"
+#include "glfw_imgui_defs.h"
+
+
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <string>
+
 #include "GLFW/glfw3.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -56,10 +62,12 @@ void imgui_render(GLFWwindow* window) {
     glfwSwapBuffers(window);
 }
 
-void display(GLFWwindow *window, long timestep, const DomainData& d, bool& restart_sim) {    
-    std::pair<double, double> iv[d.N_SCALAR_FIELDS];
-
+void display(GLFWwindow *window, long timestep, DomainData const& d, bool& restart_sim) {    
+    std::vector<std::pair<double, double>> iv;
+    iv.reserve(d.N_SCALAR_FIELDS);
+    
     for (int n = 0; n < d.N_SCALAR_FIELDS; n++) {
+        iv.push_back({0.0, 0.0});
         find_min_max(iv[n], d.fields[n], d.NX * d.NY);
         if (iv[n].first == iv[n].second) {
             iv[n].first = 0.0;
@@ -88,7 +96,7 @@ void display(GLFWwindow *window, long timestep, const DomainData& d, bool& resta
     static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock | ImPlotAxisFlags_NoGridLines, ImPlotAxesFlags_NoTickMarks;
     for (int n = 0; n < d.N_SCALAR_FIELDS; n++) {
         if (ImPlot::BeginPlot(d.field_descriptors[n].c_str(), NULL, NULL, ImVec2(500, 500), ImPlotFlags_NoLegend, axes_flags, axes_flags)) {
-            ImPlot::PlotHeatmap("DATA", d.fields[n].data(),d.NX, d.NY, iv[n].first, iv[0].second, NULL);
+            ImPlot::PlotHeatmap("DATA", d.fields[n].data(),d.NX, d.NY, iv[n].first, iv[0].second, NULL, ImPlotPoint(0, 0), ImPlotPoint(1, 1));
             ImPlot::EndPlot();
         }
         
@@ -148,36 +156,41 @@ void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, Sim
             }
             ImGui::EndCombo();
         }
-
-        if (current_item == "Concentration") {
-            if (ImGui::BeginChild("ConcDomainOpts", ImVec2(500, 30))) {
+        if (current_item) {
+            std::string item_str = current_item;
+            if (item_str == "Concentration") {
+                if (ImGui::BeginChild("ConcDomainOpts", ImVec2(500, 30))) {
                     double d = 1.0;
                     if (additional_values.size() > 0)
                         d = additional_values[0];
                     ImGui::InputDouble("Diffusion Coefficient", &d, 0.0001, 0.001);
                     if (additional_values.size() < 1) {
                         additional_values.push_back(d);
-                    } else {
+                    }
+                    else {
                         additional_values[0] = d;
                     }
-                sim_type = SimType::CONCENTRATION;
-                sim_ps.N_SCALAR_FIELDS = 1;
-                ImGui::EndChild();
+                    sim_type = SimType::CONCENTRATION;
+                    sim_ps.N_SCALAR_FIELDS = 1;
+                    ImGui::EndChild();
+                }
             }
-        } else if (current_item == "Incompressible Fluid") {
-            if (ImGui::BeginChild("IncFlDomainOpts", ImVec2(500, 30))) {
+            else if (item_str == "Incompressible Fluid") {
+                if (ImGui::BeginChild("IncFlDomainOpts", ImVec2(500, 30))) {
                     double nu = 1.0;
                     if (additional_values.size() > 0)
                         nu = additional_values[0];
                     ImGui::InputDouble("Kinematic Viscosity", &nu, 0.0001, 0.001);
                     if (additional_values.size() < 1) {
                         additional_values.push_back(nu);
-                    } else {
+                    }
+                    else {
                         additional_values[0] = nu;
                     }
-                sim_ps.N_SCALAR_FIELDS = 2;
-                sim_type = SimType::FLUID_INCOMPRESSIBLE;
-                ImGui::EndChild();
+                    sim_ps.N_SCALAR_FIELDS = 2;
+                    sim_type = SimType::FLUID_INCOMPRESSIBLE;
+                    ImGui::EndChild();
+                }
             }
         }
     }

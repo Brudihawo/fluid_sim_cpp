@@ -9,11 +9,10 @@
 #include "imgui_impl_opengl3.h"
 #include "implot.h"
 
-#include "glfw_imgui_defs.cpp"
-#include "container.h"
+#include "glfw_imgui_defs.h"
+//#include "container.h"
 #include "incompressible_fluid_domain.h"
 #include "concentration_domain.h"
-
 
 static void sim(GLFWwindow* window, SimType& sim_type, SimParams& params, ViewParams& view_ps, std::vector<double>& additional_params) {
     SimulationDomain* domain;
@@ -21,6 +20,8 @@ static void sim(GLFWwindow* window, SimType& sim_type, SimParams& params, ViewPa
         domain = new ConcentrationDomain(params, additional_params);
     else if (sim_type == SimType::FLUID_INCOMPRESSIBLE)
         domain = new IncompressibleFluidDomain(params, additional_params);
+    else
+        return;
     bool restart_sim = false;
     
     // SIMULATION
@@ -28,7 +29,7 @@ static void sim(GLFWwindow* window, SimType& sim_type, SimParams& params, ViewPa
         if (t % view_ps.timeskip == 0) {
             display(window, t, domain->get_data(), restart_sim);
         }
-        if (glfwWindowShouldClose(window) | restart_sim) break;
+        if (glfwWindowShouldClose(window) || restart_sim) break;
     }
 }
 
@@ -59,7 +60,7 @@ int main() {
 
     while (!glfwWindowShouldClose(window)) {
         bool init_done = false;
-        while (!init_done & !glfwWindowShouldClose(window)) {
+        while (!init_done && !glfwWindowShouldClose(window)) {
             sim_init_window(window, init_done, sim_type, sim_ps, view_ps, additional_params);
         }
         if (init_done) {
