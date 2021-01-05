@@ -17,6 +17,11 @@ enum class BoundaryType {
 //  ZERO // IS THIS SENSIBLE?
 };
 
+enum class Shape {
+    RECTANGLE = 0,
+    ELLIPSE
+};
+
 /* Domain data container@n 
 double ** fields: Pointer to scalar field array@n
 int N_SCALAR_FIELDS: Number of scalar fields@n

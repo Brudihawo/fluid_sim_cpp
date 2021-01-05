@@ -9,16 +9,17 @@ class SimulationDomain {
         std::vector<std::vector<double>> fields;
         std::vector<std::vector<double>> old;
         
-        const long NX;
-        const long NY;
-        const double DELTA;
-        const double DELTA_T;
-        const long N_TIMESTEPS;
+        const long NX = -1;
+        const long NY = -1;
+        const double DELTA = -1;
+        const double DELTA_T = -1;
+        const long N_TIMESTEPS = -1;
         BoundaryType b_type[2]; // TODO: Find a way for this to be const
 
         std::vector<double> extra_params;
 
         std::vector<std::string> field_descriptors;
+        std::vector<std::pair<double, double>> field_value_limits;
 
         long idx(long x, long y);
         void init();
@@ -38,4 +39,10 @@ class SimulationDomain {
 
         void add_noise(int field_index, double sigma);
         void smooth_gaussian(int field_index, int n_iterations);
+
+        //void read_infile(std::string filename);
+
+        bool set_value(int field_id, long x, long y, double value);
+        bool set_value_shape(Shape shape, int field_id, long x0, long x1, long y0, long y1, double value);
+        virtual bool value_guard_insert(int field_id, double value) = 0;
 };

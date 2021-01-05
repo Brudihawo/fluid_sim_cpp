@@ -1,10 +1,10 @@
 #include "simulation_domain.h"
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <random>
-
-
-#define BOUNDARY_PERIODIC
+#include <regex>
+#include "container.h"
 
 SimulationDomain::SimulationDomain(SimParams& p, int n_scalar_fields) 
     :NX(p.NX), NY(p.NY),
@@ -141,4 +141,47 @@ void SimulationDomain::smooth_gaussian(int field_index, int n_iterations) {
         }
         s.swap(old[field_index]);
     }
+}
+
+bool SimulationDomain::set_value(int field_id, long x, long y, double value) {
+    if ((field_id < fields.size()) && // field id acceptable
+        (x < NX) && (x > -1) && (y < NY) && (y > -1)) { // x/y limits
+        if ((value >= field_value_limits[field_id].second) && (value <= field_value_limits[field_id].second)) {
+            fields[field_id][idx(x, y)] = value;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SimulationDomain::set_value_shape(Shape shape, int field_id, long x0, long x1, long y0, long y1, double value) {
+    if ((field_id < fields.size()) && // field id acceptable
+        (x0 > -1) && (x1 < NX) && (y0 > -1) && (y1 < NY)) { // x/y limits acceptable
+        if ((value >= field_value_limits[field_id].second) && (value <= field_value_limits[field_id].second)) {
+            // TODO: Only needed for circle (minimal memory overhead if not using circle)
+            double a = (double)x0 - x1;
+            double b = (double)y0 - y1;
+            double xs = ((double)x0 + x1) / 2;
+            double ys = ((double)y0 + y1) / 2;
+            for (long y = y0; y < y1; y++) {
+                for (long x = x0; x < x0; x++) {
+                    switch (shape) {
+                        case Shape::RECTANGLE:
+                            fields[field_id][idx(x, y)] = value;
+                            break;
+                        case Shape::ELLIPSE:
+                            if (((double)x - xs) / a + ((double)y - ys) / b <= 1.0) {
+                                fields[field_id][idx(x, y)] = value;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    fields[field_id][idx(x, y)] = value;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
 }

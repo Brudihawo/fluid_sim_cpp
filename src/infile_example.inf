@@ -1,0 +1,17 @@
+# simtypes:
+## 0: Concentration
+#shape(field id) value, startx, starty, endx, endy
+
+simtype 0
+NX = 100
+NY = 100
+DELTA = 1.0
+DELTA_T = 0.001
+N_TIMESTEPS = 200000
+b_type = (periodic, periodic)
+
+
+
+
+square(1) 1.0, 20, 20, 40, 40
+circle(1) 0.0, 20, 20, 40, 40

@@ -6,16 +6,14 @@ This is a framework for implementing 2D scalar field evolution algorithms and vi
 - Currently, boundary conditions 
 
 ## TODOS:
-1. Implement swapping pointers instead of copying old scalar field data for improved performance
-2. Implement different boundary conditions
-3. Update Documentation for how to implement class
-3. Implement serialization
-
+3. Implement serialization (write_timesteps and end file format (also, file reader -> Plotting with matplotlib or *implot*?))
+4. Update "Implementing a new Simulation Domain Class" with information on field descriptors and field limit values.
+5. Add visual/console mode to infile
 --- 
 
 ## Implementing a new Simulation Domain Class
 
-A new simulation domain class needs to implement the functions `bool timestep(long t)` and `void init()`.
+A new simulation domain class needs to implement the functions `bool timestep(long t)` and `void init()`, as well as setting the upper and lower bound for field values.
 
 ### concentration_domain.h:
 ``` cpp

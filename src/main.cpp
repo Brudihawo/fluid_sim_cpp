@@ -34,7 +34,8 @@ static void sim(GLFWwindow* window, SimType& sim_type, SimParams& params, ViewPa
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+
     SimParams sim_ps = {
         .NX = 100,
         .NY = 100,

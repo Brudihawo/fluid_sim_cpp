@@ -2,6 +2,7 @@
 #include "container.h"
 #include "simulation_domain.h"
 #include <vector>
+#include <iostream>
 
 class ConcentrationDomain : public SimulationDomain {
     private: 
