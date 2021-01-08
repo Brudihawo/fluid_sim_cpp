@@ -44,5 +44,4 @@ class SimulationDomain {
 
         bool set_value(int field_id, long x, long y, double value);
         bool set_value_shape(Shape shape, int field_id, long x0, long x1, long y0, long y1, double value);
-        virtual bool value_guard_insert(int field_id, double value) = 0;
 };

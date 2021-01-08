@@ -2,16 +2,28 @@
 ## 0: Concentration
 #shape(field id) value, startx, starty, endx, endy
 
-simtype 0
+simtype = 0
+
+# Number of Voxels in x/y direction
 NX = 100
 NY = 100
+
+# Spatial step size
 DELTA = 1.0
+
+# Timestep Size
 DELTA_T = 0.001
+
+# Number of Timesteps
 N_TIMESTEPS = 200000
+
+# Boundary Types
+## Possible Types: 
+## periodic, constant_val, constant_grad
 b_type = (periodic, periodic)
 
 
 
-
+# Insert Geometry
 square(1) 1.0, 20, 20, 40, 40
-circle(1) 0.0, 20, 20, 40, 40
+ellipse(1) 0.0, 20, 20, 40, 40
