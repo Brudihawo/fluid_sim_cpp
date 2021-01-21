@@ -14,6 +14,7 @@ class SimulationDomain {
         const double DELTA = -1;
         const double DELTA_T = -1;
         const long N_TIMESTEPS = -1;
+
         BoundaryType b_type[2]; // TODO: Find a way for this to be const
 
         std::vector<double> extra_params;

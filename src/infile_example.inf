@@ -1,8 +1,14 @@
 # simtypes:
 ## 0: Concentration
-#shape(field id) value, startx, starty, endx, endy
 
 simtype = 0
+visualise = 1
+skip_steps = 200
+
+
+# Diffusion Coefficient
+D = 1.0
+
 
 # Number of Voxels in x/y direction
 NX = 100
@@ -25,5 +31,8 @@ b_type = (periodic, periodic)
 
 
 # Insert Geometry
-square(1) 1.0, 20, 20, 40, 40
+# Syntax: 
+# shape(field id) value, startx, starty, endx, endy
+# Current Avaliable shapes: ellipse and rectangle
+rect(1) 1.0, 20, 20, 40, 40
 ellipse(1) 0.0, 20, 20, 40, 40
