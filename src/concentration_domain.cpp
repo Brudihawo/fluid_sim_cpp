@@ -8,7 +8,8 @@ void ConcentrationDomain::init() {
     }
 }
 
-ConcentrationDomain::ConcentrationDomain(SimParams& p, std::vector<double>& d): SimulationDomain(p, 1), D(d[0]), c(fields[0]), old_c(old[0]) {
+ConcentrationDomain::ConcentrationDomain(SimParams& p, std::vector<double> additional_params): SimulationDomain(p, 1), c(fields[0]), old_c(old[0]) {
+    D = additional_params[0];
     field_descriptors.push_back("Concentration");
     field_value_limits.push_back({ 0.0, 1.0 });
     init();
@@ -27,19 +28,4 @@ bool ConcentrationDomain::timestep(long t) {
         }
     }
     return t < N_TIMESTEPS;
-}
-
-bool ConcentrationDomain::value_guard_insert(int field_id, long x, long y, double value) {
-    switch (field_id) {
-        case 0: // Concentration Field
-            if ((value <= 1.0) && (value >= 0.0)) {
-                return set_value(field_id, x, y, value);
-                break;
-            }
-        default: // Invalid field id
-            return false;
-            std::cerr << "Invalid Field ID: " << field_id << " on insert." << std::endl;
-    }
-
-    return false;
 }

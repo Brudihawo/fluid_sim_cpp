@@ -13,7 +13,7 @@ class ConcentrationDomain : public SimulationDomain {
         void init();
     
     public:
-        ConcentrationDomain(SimParams& p, std::vector<double>& additional_params);
+        ConcentrationDomain(SimParams& p, std::vector<double> additional_params);
         ~ConcentrationDomain();
         bool timestep(long t) override;
 };
