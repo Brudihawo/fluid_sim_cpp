@@ -6,7 +6,7 @@ This is a framework for implementing 2D scalar field evolution algorithms and vi
 - Infile Parsing Done
 
 ## TODOS:
-2. Implement Phase-Field Method (Grandchem etc) for 2 components
+2. Add starting parsed infile simulation
 3. Update docs
 3. Implement serialization (write_timesteps and end file format (also, file reader -> Plotting with matplotlib or *implot*?))
 4. Update "Implementing a new Simulation Domain Class" with information on field descriptors and field limit values.
