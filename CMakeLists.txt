@@ -3,7 +3,6 @@ project(Sim2D)
 set(TOP_LIB_DIR C:/Users/hawoh/workspace/libraries)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 add_executable(Sim2D "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
-add_executable(infile_read "src/infile_read_test.cpp")
 add_subdirectory(src)
 add_subdirectory(res)
 
@@ -38,9 +37,6 @@ target_sources(Sim2D PUBLIC "src/glfw_imgui_defs.cpp"
                             "src/simulation_domain.cpp"
                             "src/concentration_domain.cpp"
                             "src/incompressible_fluid_domain.cpp")
-
-target_sources(infile_read PUBLIC "src/simulation_domain.cpp"
-                            "src/concentration_domain.cpp")
 
 get_target_property(Sim2D_SOURCES Sim2D SOURCES)
 message("${Sim2D_SOURCES}")

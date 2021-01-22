@@ -62,7 +62,7 @@ void imgui_render(GLFWwindow* window) {
     glfwSwapBuffers(window);
 }
 
-void display(GLFWwindow *window, long timestep, DomainData const& d, bool& restart_sim) {    
+void display(GLFWwindow *window, long timestep, DomainData const& d) {    
     std::vector<std::pair<double, double>> iv;
     iv.reserve(d.N_SCALAR_FIELDS);
     
@@ -115,102 +115,100 @@ void display(GLFWwindow *window, long timestep, DomainData const& d, bool& resta
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
         glfwSetWindowShouldClose(window, 1);    
     }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space))) {
-        restart_sim = true;    
-    }
 }
 
-void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, SimParams& sim_ps, ViewParams& view_ps, std::vector<double>& additional_values) {
-    long sim_dim = sim_ps.NX;
-    double delta = sim_ps.DELTA;
-    double delta_t = sim_ps.DELTA_T;
-    long n_timesteps = sim_ps.N_TIMESTEPS;
-    int n_scalar_fields = sim_ps.N_SCALAR_FIELDS;
-    int timeskip = view_ps.timeskip;
-
-    glfwPollEvents();
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // TODO: Improve GUI
-    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Once);
-    ImGui::Begin("Sim2D - Initialisation");
-    {
-        ImGui::InputScalar("Simulation Domain Size", ImGuiDataType_S64, &sim_dim, NULL, NULL, "%d");
-        ImGui::InputDouble("Delta", &delta);
-        ImGui::InputDouble("Delta t", &delta_t);
-        ImGui::InputScalar("Timesteps", ImGuiDataType_S64, &n_timesteps, NULL, NULL, "%d");
-
-        ImGui::InputInt("Timeskip", &timeskip, 1, 100);
-
-        static const char* current_item = NULL;
-        if (ImGui::BeginCombo("Simulation Type", current_item)) {
-            const char* items[] = {"Concentration", "Incompressible Fluid" };
-            for (const char* item: items) {
-                bool is_selected = (current_item == item);
-                if (ImGui::Selectable(item, is_selected))
-                    current_item = item;
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-        if (current_item) {
-            std::string item_str = current_item;
-            if (item_str == "Concentration") {
-                if (ImGui::BeginChild("ConcDomainOpts", ImVec2(500, 30))) {
-                    double d = 1.0;
-                    if (additional_values.size() > 0)
-                        d = additional_values[0];
-                    ImGui::InputDouble("Diffusion Coefficient", &d, 0.0001, 0.001);
-                    if (additional_values.size() < 1) {
-                        additional_values.push_back(d);
-                    }
-                    else {
-                        additional_values[0] = d;
-                    }
-                    sim_type = SimType::CONCENTRATION;
-                    sim_ps.N_SCALAR_FIELDS = 1;
-                    ImGui::EndChild();
-                }
-            }
-            else if (item_str == "Incompressible Fluid") {
-                if (ImGui::BeginChild("IncFlDomainOpts", ImVec2(500, 30))) {
-                    double nu = 1.0;
-                    if (additional_values.size() > 0)
-                        nu = additional_values[0];
-                    ImGui::InputDouble("Kinematic Viscosity", &nu, 0.0001, 0.001);
-                    if (additional_values.size() < 1) {
-                        additional_values.push_back(nu);
-                    }
-                    else {
-                        additional_values[0] = nu;
-                    }
-                    sim_ps.N_SCALAR_FIELDS = 2;
-                    sim_type = SimType::FLUID_INCOMPRESSIBLE;
-                    ImGui::EndChild();
-                }
-            }
-        }
-    }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space))
-        || ImGui::Button("Begin")) {
-        init_done = true;
-    }
-
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
-        glfwSetWindowShouldClose(window, 1);    
-    }
-    
-    ImGui::End();
-    imgui_render(window);
-
-    sim_ps.NX = sim_dim;
-    sim_ps.NY = sim_dim;
-    sim_ps.N_TIMESTEPS = n_timesteps;
-    sim_ps.DELTA = delta;
-    sim_ps.DELTA_T = delta_t;
-
-    view_ps.timeskip = timeskip;
-}
+// DEPRECATED. USE INFILE INSTEAD
+// void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, SimParams& sim_ps, ViewParams& view_ps, std::vector<double>& additional_values) {
+//    long sim_dim = sim_ps.NX;
+//    double delta = sim_ps.DELTA;
+//    double delta_t = sim_ps.DELTA_T;
+//    long n_timesteps = sim_ps.N_TIMESTEPS;
+//    int n_scalar_fields = sim_ps.N_SCALAR_FIELDS;
+//    int timeskip = view_ps.timeskip;
+//
+//    glfwPollEvents();
+//    ImGui_ImplOpenGL3_NewFrame();
+//    ImGui_ImplGlfw_NewFrame();
+//    ImGui::NewFrame();
+//
+//    // TODO: Improve GUI
+//    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Once);
+//    ImGui::Begin("Sim2D - Initialisation");
+//    {
+//        ImGui::InputScalar("Simulation Domain Size", ImGuiDataType_S64, &sim_dim, NULL, NULL, "%d");
+//        ImGui::InputDouble("Delta", &delta);
+//        ImGui::InputDouble("Delta t", &delta_t);
+//        ImGui::InputScalar("Timesteps", ImGuiDataType_S64, &n_timesteps, NULL, NULL, "%d");
+//
+//        ImGui::InputInt("Timeskip", &timeskip, 1, 100);
+//
+//        static const char* current_item = NULL;
+//        if (ImGui::BeginCombo("Simulation Type", current_item)) {
+//            const char* items[] = {"Concentration", "Incompressible Fluid" };
+//            for (const char* item: items) {
+//                bool is_selected = (current_item == item);
+//                if (ImGui::Selectable(item, is_selected))
+//                    current_item = item;
+//                if (is_selected)
+//                    ImGui::SetItemDefaultFocus();
+//            }
+//            ImGui::EndCombo();
+//        }
+//        if (current_item) {
+//            std::string item_str = current_item;
+//            if (item_str == "Concentration") {
+//                if (ImGui::BeginChild("ConcDomainOpts", ImVec2(500, 30))) {
+//                    double d = 1.0;
+//                    if (additional_values.size() > 0)
+//                        d = additional_values[0];
+//                    ImGui::InputDouble("Diffusion Coefficient", &d, 0.0001, 0.001);
+//                    if (additional_values.size() < 1) {
+//                        additional_values.push_back(d);
+//                    }
+//                    else {
+//                        additional_values[0] = d;
+//                    }
+//                    sim_type = SimType::CONCENTRATION;
+//                    sim_ps.N_SCALAR_FIELDS = 1;
+//                    ImGui::EndChild();
+//                }
+//            }
+//            else if (item_str == "Incompressible Fluid") {
+//                if (ImGui::BeginChild("IncFlDomainOpts", ImVec2(500, 30))) {
+//                    double nu = 1.0;
+//                    if (additional_values.size() > 0)
+//                        nu = additional_values[0];
+//                    ImGui::InputDouble("Kinematic Viscosity", &nu, 0.0001, 0.001);
+//                    if (additional_values.size() < 1) {
+//                        additional_values.push_back(nu);
+//                    }
+//                    else {
+//                        additional_values[0] = nu;
+//                    }
+//                    sim_ps.N_SCALAR_FIELDS = 2;
+//                    sim_type = SimType::FLUID_INCOMPRESSIBLE;
+//                    ImGui::EndChild();
+//                }
+//            }
+//        }
+//    }
+//    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space))
+//        || ImGui::Button("Begin")) {
+//        init_done = true;
+//    }
+//
+//    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape))) {
+//        glfwSetWindowShouldClose(window, 1);    
+//    }
+//    
+//    ImGui::End();
+//    imgui_render(window);
+//
+//    sim_ps.NX = sim_dim;
+//    sim_ps.NY = sim_dim;
+//    sim_ps.N_TIMESTEPS = n_timesteps;
+//    sim_ps.DELTA = delta;
+//    sim_ps.DELTA_T = delta_t;
+//
+//    view_ps.timeskip = timeskip;
+//}

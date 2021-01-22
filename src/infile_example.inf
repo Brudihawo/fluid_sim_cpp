@@ -2,8 +2,13 @@
 ## 0: Concentration
 
 simtype = 0
-visualise = 1
-skip_steps = 200
+
+# Window Resolution for render
+res_x = 800
+res_y = 700
+
+# Number of timesteps between each render
+timeskip = 50
 
 
 # Diffusion Coefficient
@@ -34,5 +39,9 @@ b_type = (periodic, periodic)
 # Syntax: 
 # shape(field id) value, startx, starty, endx, endy
 # Current Avaliable shapes: ellipse and rectangle
-rect(1) 1.0, 20, 20, 40, 40
-ellipse(1) 0.0, 20, 20, 40, 40
+rect(0) 1.0, 20, 20, 80, 80 
+ellipse(0) 0.0, 20, 20, 80, 80
+
+# Apply gaussian smoothing to field
+# Syntax: smooth(field_id, n_iterations)
+smooth(0, 3)

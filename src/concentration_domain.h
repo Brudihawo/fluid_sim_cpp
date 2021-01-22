@@ -9,8 +9,6 @@ class ConcentrationDomain : public SimulationDomain {
         std::vector<double>& c; // Concentration scalar field
         std::vector<double>& old_c; // Previous timestep concentration values;
         double D; // Diffusion Coefficient
-        
-        void init();
     
     public:
         ConcentrationDomain(SimParams& p, std::vector<double> additional_params);
