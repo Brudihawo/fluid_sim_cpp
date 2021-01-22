@@ -33,11 +33,7 @@ target_link_libraries(Sim2D implot)
 # src
 target_include_directories(Sim2D PUBLIC "${CMAKE_CURRENT_LIST_DIR}/src")
 
-target_sources(Sim2D PUBLIC "src/glfw_imgui_defs.cpp"
-                            "src/simulation_domain.cpp"
-                            "src/concentration_domain.cpp"
-                            "src/phasefield_domain.cpp"
-                            "src/incompressible_fluid_domain.cpp")
+target_sources(Sim2D PUBLIC "src/glfw_imgui_defs.cpp")
 
 get_target_property(Sim2D_SOURCES Sim2D SOURCES)
 message("${Sim2D_SOURCES}")
@@ -47,3 +43,6 @@ target_link_libraries(Sim2D math)
 
 # parsing
 target_link_libraries(Sim2D parsing)
+
+# domain
+target_link_libraries(Sim2D domain)
