@@ -3,15 +3,24 @@ This is a framework for implementing 2D scalar field evolution algorithms and vi
 
 ## Updates
 - Diffusion simulation is working
-- Infile Parsing (almost) done, Only needs to be integrated with starting a simulation
+- Infile Parsing Done
 
 ## TODOS:
-2. Add starting parsed infile simulation
 3. Update docs
 3. Implement serialization (write_timesteps and end file format (also, file reader -> Plotting with matplotlib or *implot*?))
 4. Update "Implementing a new Simulation Domain Class" with information on field descriptors and field limit values.
 5. Add visual/console mode to infile
 --- 
+
+## Infile Parsing:
+Using infiles to input initial scalar fields, more complex simulations have become possible. 
+Applying gaussian smoothing to the domain may fix sime artifacts.
+
+We now can make stuff like this:
+
+![](img/diffusion_better_geometry.png)
+
+
 
 ## Implementing a new Simulation Domain Class
 
