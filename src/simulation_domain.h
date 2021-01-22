@@ -17,12 +17,12 @@ class SimulationDomain {
 
         BoundaryType b_type[2]; // TODO: Find a way for this to be const
 
-        std::vector<double> extra_params;
-
         std::vector<std::string> field_descriptors;
         std::vector<std::pair<double, double>> field_value_limits;
 
         long idx(long x, long y);
+
+    private:
         void init();
         
     public:
@@ -30,7 +30,7 @@ class SimulationDomain {
         virtual ~SimulationDomain();
 
         virtual bool timestep(long t) = 0;
-        inline DomainData get_data() {return {fields, field_descriptors, N_SCALAR_FIELDS, NX, NY};} 
+        inline DomainData get_data() {return {fields, field_descriptors, field_value_limits, N_SCALAR_FIELDS, NX, NY};} 
 
         double ddx(std::vector<double>& s, long  x, long  y);
         double ddy(std::vector<double>& s, long  x, long  y);

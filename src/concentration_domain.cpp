@@ -1,7 +1,6 @@
 #include "concentration_domain.h"
 
-ConcentrationDomain::ConcentrationDomain(SimParams& p, std::vector<double> additional_params): SimulationDomain(p, 1), c(fields[0]), old_c(old[0]) {
-    D = additional_params[0];
+ConcentrationDomain::ConcentrationDomain(SimParams& p, std::vector<double>& additional_params): SimulationDomain(p, 1), D(additional_params[0]), c(fields[0]), old_c(old[0]) {
     field_descriptors.push_back("Concentration");
     field_value_limits.push_back({ 0.0, 1.0 });
 }

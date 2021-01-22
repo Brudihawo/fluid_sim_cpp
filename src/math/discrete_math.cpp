@@ -12,4 +12,12 @@ void find_min_max(std::pair<double, double>& iv, std::vector<double>& s, long MA
     }
 }
 
+double whole_pow(double& base, long exp) {
+    double out = 1;
+    for (long i = 0; i < exp; i++) {
+        out = out * base;
+    }
+    return out;
+}
+
 

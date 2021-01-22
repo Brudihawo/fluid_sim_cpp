@@ -2,10 +2,12 @@
 #include <vector>
 #include <string>
 
+// ADD SIMULATION TYPES HERE
 enum class SimType {
     NONE = -1,
-    FLUID_INCOMPRESSIBLE,
     CONCENTRATION,
+    PHASEFIELD,
+    FLUID_INCOMPRESSIBLE,
 };
 
 enum class BoundaryType {
@@ -30,6 +32,7 @@ long NY: Resolution of fields in y*/
 typedef struct DomainData{ 
     std::vector<std::vector<double>>& fields;
     std::vector<std::string>& field_descriptors;
+    std::vector<std::pair<double, double>>& val_limits;
     int N_SCALAR_FIELDS;
     long NX;
     long NY;

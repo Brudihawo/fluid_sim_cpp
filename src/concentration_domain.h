@@ -2,7 +2,6 @@
 #include "container.h"
 #include "simulation_domain.h"
 #include <vector>
-#include <iostream>
 
 class ConcentrationDomain : public SimulationDomain {
     private: 
@@ -11,7 +10,7 @@ class ConcentrationDomain : public SimulationDomain {
         double D; // Diffusion Coefficient
     
     public:
-        ConcentrationDomain(SimParams& p, std::vector<double> additional_params);
+        ConcentrationDomain(SimParams& p, std::vector<double>& additional_params);
         ~ConcentrationDomain();
         bool timestep(long t) override;
 };

@@ -67,7 +67,7 @@ void display(GLFWwindow *window, long timestep, DomainData const& d) {
     iv.reserve(d.N_SCALAR_FIELDS);
     
     for (int n = 0; n < d.N_SCALAR_FIELDS; n++) {
-        iv.push_back({0.0, 0.0});
+        iv.push_back({ 0.0, 0.0 });
         find_min_max(iv[n], d.fields[n], d.NX * d.NY);
         if (iv[n].first == iv[n].second) {
             iv[n].first = 0.0;

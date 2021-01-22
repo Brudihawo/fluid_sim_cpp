@@ -1,5 +1,6 @@
 # simtypes:
 ## 0: Concentration
+## 1: Phasefield
 
 simtype = 0
 
@@ -15,7 +16,7 @@ timeskip = 50
 D = 1.0
 
 
-# Number of Voxels in x/y direction
+# Number of voxels in x/y direction
 NX = 100
 NY = 100
 
@@ -23,7 +24,7 @@ NY = 100
 DELTA = 1.0
 
 # Timestep Size
-DELTA_T = 0.001
+DELTA_T = 0.08
 
 # Number of Timesteps
 N_TIMESTEPS = 200000
