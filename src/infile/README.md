@@ -14,7 +14,6 @@ timeskip = 50
 
 ```
 
-
 Then, we define basic simulation domain options:
 1. Simulation type
 2. Domain size in voxels
@@ -25,30 +24,31 @@ Then, we define basic simulation domain options:
 
 ``` python
 simtype = 0
-# Simulation 
+# Avaliable Types:
+# 0: Concentration
+# 1: Phasefield
 
-# Number of voxels in x/y direction
+# Number of voxels in x/y direction [int]
 NX = 100
 NY = 100
 
-# Spatial step size
+# Spatial step size [double]
 DELTA = 1.0
 
-# Timestep Size
+# Timestep Size [double]
 DELTA_T = 0.08
 
-# Number of Timesteps
+# Number of Timesteps [long]
 N_TIMESTEPS = 200000
 
-# Boundary Types
-## Possible Types: 
-## periodic, constant_val, constant_grad
+# Boundary Types (x, y)
 b_type = (periodic, periodic)
+# Avaliable Types:
+# periodic, constant_val, constant_grad
 
 ```
 
-
-Next, we define simulation type specific constants.
+Next, we define simulation type specific constants. These are read in as `double`and need to be specified with a decimal point.
 ``` python
 # Diffusion Simulation
 D = 1.0
@@ -63,17 +63,20 @@ T = 0.95
 
 ```
 
-Defining geometry works like this:
+Define initial simulation conditions by using shape commands. They produce a shape inscribed into the specified bounding box. Gaussian smoothing is also possible. Note that these will be applied in the order they are specified. 
+`Shape -> Smooth -> Shape` therefore produces different results than `Shape -> Shape -> Smooth`.
 ``` python
 # Syntax: 
 # shape(field id) value, startx, starty, endx, endy
 # Currently defined shapes: ellipse and rectangle
+# Format syntax: shape([int]) [double],[int],[int],[int],[int]
 rect(0) 1.0, 20, 20, 80, 80 
 ellipse(0) 0.0, 20, 20, 80, 80
 
 # Apply gaussian smoothing to field.
 # This resolves some simulation artifacts caused by discontinuities.
-# Syntax: smooth(field_id, n_iterations)
+# Syntax: smooth(field_id, n_iterations) 
+#	  smooth([int], [int])
 smooth(0, 3)
 ```
 Depending on the simulation type, setting initial conditions in other fields is also possible. Non-Initialised field values will default to zero.
