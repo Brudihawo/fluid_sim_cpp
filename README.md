@@ -16,7 +16,7 @@ This is a framework for implementing 2D scalar field evolution algorithms and vi
 ## Infile Parsing:
 Using infiles to input initial scalar fields, more complex simulations have become possible. 
 Applying gaussian smoothing to the domain after setting geometry may fix some artifacts.
-Example infiles, and a guide on infile syntax (coming soon) can be found in [src/infiles](https://github.com/Brudihawo/sim2d_cpp/tree/main/src/infile.
+Example infiles, and a guide on infile syntax (coming soon) can be found in [src/infile](https://github.com/Brudihawo/sim2d_cpp/tree/main/src/infile).
 
 We now can make stuff like this:
 
