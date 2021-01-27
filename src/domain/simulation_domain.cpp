@@ -49,25 +49,25 @@ double SimulationDomain::ddx(std::vector<double>& s, long x, long y) {
 // Spatial derivative in respect to y
 double SimulationDomain::ddy(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[idx(x, y, 0, +1)];
-    sm = s[idx(x, y, 0, -1)];
+    sp = s[idx(x, y, 0, + 1)];
+    sm = s[idx(x, y, 0, - 1)];
     return (sp - sm) / ( 2 * DELTA);
 }
 
 // Second spatial derivative in respect to x
 double SimulationDomain::d2dx(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[idx(x, y, +2, 0)];
-    sm = s[idx(x, y, -2, 0)];
-    return (sp + sm - 2 * s[idx(x, y)]) / (4 * DELTA * DELTA);
+    sp = s[idx(x, y, + 1, 0)];
+    sm = s[idx(x, y, - 1, 0)];
+    return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
 }
 
 // Second spatial derivative in respect to y
 double SimulationDomain::d2dy(std::vector<double>& s, long x, long y) {
     double sp, sm;
-    sp = s[idx(x, y, 0, +2)];
-    sm = s[idx(x, y, 0, -2)];
-    return (sp + sm - 2 * s[idx(x, y)]) / (4 * DELTA * DELTA);
+    sp = s[idx(x, y, 0, + 1)];
+    sm = s[idx(x, y, 0, - 1)];
+    return (sp + sm - 2 * s[idx(x, y)]) / (DELTA * DELTA);
 }
 
 // Handle boundary types for neighboring cell indices
@@ -125,7 +125,7 @@ void SimulationDomain::smooth_gaussian(int field_index, int n_iterations) {
     for (int it = 0; it < n_iterations; it++) {
         for (long j = 1; j < NY - 1; j++) {
             for (long i = 1; i < NX - 1; i++) {
-                old[0][idx(i, j)] = 
+                old[field_index][idx(i, j)] = 
                     (1.0 * s[idx(i, j, -1, -1)] +  // Top Row
                      2.0 * s[idx(i, j,  0, -1)] +
                      1.0 * s[idx(i, j,  1, -1)] +

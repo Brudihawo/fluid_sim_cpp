@@ -15,5 +15,5 @@
 void glfw_error_callback(int error, const char* description);
 GLFWwindow* glfw_imgui_init(ViewParams view_ps);
 void imgui_render(GLFWwindow* window);
-void display(GLFWwindow *window, long timestep, const DomainData& d);
-void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, SimParams& sim_ps, ViewParams& view_ps, std::vector<double>& additional_values);
+void display(GLFWwindow *window, long timestep, const DomainData& d, const ViewParams& view_ps);
+//void sim_init_window(GLFWwindow* window, bool& init_done, SimType& sim_type, SimParams& sim_ps, ViewParams& view_ps, std::vector<double>& additional_values);

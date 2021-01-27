@@ -62,7 +62,7 @@ void imgui_render(GLFWwindow* window) {
     glfwSwapBuffers(window);
 }
 
-void display(GLFWwindow *window, long timestep, DomainData const& d) {    
+void display(GLFWwindow *window, long timestep, DomainData const& d, const ViewParams& view_ps) {    
     std::vector<std::pair<double, double>> iv;
     iv.reserve(d.N_SCALAR_FIELDS);
     
@@ -84,10 +84,7 @@ void display(GLFWwindow *window, long timestep, DomainData const& d) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    if (d.N_SCALAR_FIELDS > 1) 
-        ImGui::SetNextWindowSize(ImVec2(1200, 700));
-    else 
-        ImGui::SetNextWindowSize(ImVec2(600, 700));
+    ImGui::SetNextWindowSize(ImVec2(view_ps.XRES, view_ps.YRES));
     ImGui::Begin("SIM DATA");
     ImGui::Text("Simulation Timestep: %ld", timestep);
 

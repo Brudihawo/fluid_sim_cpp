@@ -1,0 +1,51 @@
+# simtypes:
+## 0: Concentration
+## 1: Phasefield
+## 2: Incompressible Fluid
+
+simtype = 2
+
+# Window Resolution for render
+res_x = 1400
+res_y = 700
+
+# Number of timesteps between each render
+timeskip = 1
+
+# Viscosity
+NU = 1.0
+
+# Number of voxels in x/y direction
+NX = 100
+NY = 100
+
+# Spatial step size
+DELTA = 1.0
+
+# Timestep Size
+DELTA_T = 0.08
+
+# Number of Timesteps
+N_TIMESTEPS = 200000
+
+# Boundary Types
+## Possible Types: 
+## periodic, constant_val, constant_grad
+b_type = (periodic, periodic)
+
+
+
+# Insert Geometry
+# Syntax: 
+# shape(field id) value, startx, starty, endx, endy
+# Current Avaliable shapes: ellipse and rectangle
+ellipse(0) 1.0, 20, 40, 30, 60
+ellipse(0) -1.0, 70, 40, 80, 60
+
+ellipse(1) 1.0, 40, 20, 60, 30
+ellipse(1) -1.0, 40, 70, 60, 80
+
+# Apply gaussian smoothing to field
+# Syntax: smooth(field_id, n_iterations)
+smooth(0, 1)
+smooth(1, 3)

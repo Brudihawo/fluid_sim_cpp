@@ -12,10 +12,12 @@
 #include "simulation_domain.h"
 #include "concentration_domain.h"
 #include "phasefield_domain.h"
+#include "fluid_incompressible_domain.h"
 
 // Parsing information
 #include "parse_concentration.h"
 #include "parse_phasefield.h"
+#include "parse_fluid_incompressible.h"
 
 #define DEBUG
 void debug_print(std::string str) {
@@ -63,6 +65,10 @@ bool parse_base(std::ifstream& infile, SimParams& params, ViewParams& view_ps, S
             else if (m[1] == "1") {
                 simtype = SimType::PHASEFIELD;
                 params.N_SCALAR_FIELDS = 1;
+            }
+            else if (m[1] == "2") {
+                simtype = SimType::FLUID_INCOMPRESSIBLE;
+                params.N_SCALAR_FIELDS = 2;
             }
         }
 
@@ -147,7 +153,7 @@ bool parse_base(std::ifstream& infile, SimParams& params, ViewParams& view_ps, S
 void parse_initials(SimulationDomain*& domain, std::ifstream& infile) {
     std::string line;
 
-    std::regex shape_regex("(rect|ellipse)\\s*\\((\\d+)\\)\\s*(\\d+\\.\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+)\\s*");
+    std::regex shape_regex("(rect|ellipse)\\s*\\((\\d+)\\)\\s*([+-]{0,1}\\d+\\.\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+)\\s*");
     std::regex smooth_regex("smooth\\((\\d+)\\s*,\\s*(\\d+)\\)\\s*");
     std::smatch m;
 
@@ -228,6 +234,18 @@ bool parse_infile(std::string filename, SimulationDomain*& domain, ViewParams& v
                 std::cout << "Found all parameters for phasefield domain!" << std::endl;
                 std::cout << "Creating domain..." << std::endl;
                 domain = new PhasefieldDomain(params, additional_params);
+            }
+            else {
+                std::cerr << "Error parsing phasefield domain values! Aborting..." << std::endl;
+                infile.close();
+                return false;
+            }
+        }
+        else if (simtype == SimType::FLUID_INCOMPRESSIBLE) {
+            if (parse_fluid_incompressible(infile, additional_params)) {
+                std::cout << "Found all parameters for phasefield domain!" << std::endl;
+                std::cout << "Creating domain..." << std::endl;
+                domain = new FluidIncompressibleDomain(params, additional_params);
             }
             else {
                 std::cerr << "Error parsing phasefield domain values! Aborting..." << std::endl;

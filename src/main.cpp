@@ -19,9 +19,10 @@
 
 
 static void sim(GLFWwindow* window, SimulationDomain*& domain, ViewParams& view_ps) {
+    std::cout << "Starting Simulation" << std::endl;
     for (long t = 0; domain->timestep(t); t++) {
         if (t % view_ps.timeskip == 0) {
-            display(window, t, domain->get_data());
+            display(window, t, domain->get_data(), view_ps);
         }
         if (glfwWindowShouldClose(window)) break;
     }
