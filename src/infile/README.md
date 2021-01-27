@@ -27,6 +27,7 @@ simtype = 0
 # Avaliable Types:
 # 0: Concentration
 # 1: Phasefield
+# 2: Incompressible Fluid
 
 # Number of voxels in x/y direction [int]
 NX = 100

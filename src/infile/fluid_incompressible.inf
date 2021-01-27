@@ -10,7 +10,7 @@ res_x = 1400
 res_y = 700
 
 # Number of timesteps between each render
-timeskip = 1
+timeskip = 50
 
 # Viscosity
 NU = 1.0
@@ -47,5 +47,5 @@ ellipse(1) -1.0, 40, 70, 60, 80
 
 # Apply gaussian smoothing to field
 # Syntax: smooth(field_id, n_iterations)
-smooth(0, 1)
+smooth(0, 3)
 smooth(1, 3)

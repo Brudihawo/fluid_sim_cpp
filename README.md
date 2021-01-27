@@ -2,12 +2,12 @@
 This is a framework for implementing 2D scalar field evolution algorithms and viewing them in real time using [Dear ImGui](https://github.com/ocornut/imgui) and the plotting library [ImPlot](https://github.com/epezent/implot).
 
 ## Updates
-- Diffusion simulation is working
-- Phasefield Simulation working
-- Infile Parsing Done
+- Diffusion simulation working
+- Phasefield simulation working
+- Infile parsing working
+- Incompressible fluid simulation working
 
 ## TODOS:
-1. add Guide to infile creation
 1. Implement persistence (write_timesteps and end file format (also, file reader -> Plotting with matplotlib or *implot*?))
 5. Add visual/console mode to infile parsing -> only makes sense after persistence is implemented
 3. Create documentation with doxygen
