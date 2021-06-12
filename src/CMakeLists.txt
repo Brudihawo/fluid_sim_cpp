@@ -1,3 +1,3 @@
 add_subdirectory(math)
-add_subdirectory(parsing)
+add_subdirectory(io)
 add_subdirectory(domain)

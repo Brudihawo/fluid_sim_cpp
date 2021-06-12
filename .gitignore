@@ -2,5 +2,10 @@ build/
 .vscode/
 .vs/
 *.exe
-imgui.ini
 CMakeSettings.json
+.cmake
+
+# ccls and tags
+.ccls-cache
+.ccls
+tags

@@ -7,8 +7,8 @@ FluidIncompressibleDomain::FluidIncompressibleDomain(SimParams& p, std::vector<d
     field_descriptors.push_back("Velocity in X");
     field_descriptors.push_back("Velocity in Y");
 
-    field_value_limits.push_back({ -HUGE, HUGE });
-    field_value_limits.push_back({ -HUGE, HUGE });
+    field_value_limits.push_back({ -HUGE_VAL, HUGE_VAL });
+    field_value_limits.push_back({ -HUGE_VAL, HUGE_VAL });
 }
 
 FluidIncompressibleDomain::~FluidIncompressibleDomain() {
