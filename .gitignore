@@ -9,3 +9,6 @@ CMakeSettings.json
 .ccls-cache
 .ccls
 tags
+
+# testing
+test

@@ -1,7 +1,9 @@
 #pragma once
+
+#include <vector>
+
 #include "container.h"
 #include "simulation_domain.h"
-#include <vector>
 
 class FluidIncompressibleDomain : public SimulationDomain {
     private:
