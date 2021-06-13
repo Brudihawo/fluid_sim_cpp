@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 #include "simulation_domain.h"
 
@@ -22,14 +23,13 @@ std::string vtk_file_header(long x, long y, std::vector<std::string> field_descr
   header << "<VTKFile type=\"ImageData\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
   header << "  <ImageData WholeExtent=\"0 " << x << " 0 " << y << " 0 0\" Origin=\"0 0 0\" Spacing=\"1 1 1\">" << std::endl;
   header << "    <Piece Extent=\"0 " << x << " 0 " << y << " 0 0\">" << std::endl;
-  header << "      <PointData>" << std::endl;
-  header << "      </PointData>" << std::endl;
-  header << "      <CellData Scalars=\"test\">" << std::endl;
+  header << "      <PointData></PointData>" << std::endl;
+  header << "      <CellData>" << std::endl;
 
   // add all fields and manage offsets
   for (int i = 0; i < field_descriptors.size(); i++) {
     header << "        <DataArray type=\"Float64\" Name=\"" << field_descriptors[i];
-    header << "\" format=\"appended\" RangeMin=\"0\" RangeMax=\"0\" offset=\"" << i << "\"/>" << std::endl;
+    header << "\" format=\"appended\" RangeMin=\"0\" RangeMax=\"0\" offset=\"" << i * (x * y * sizeof(double) + sizeof(uint64_t)) << "\"/>" << std::endl;
   }
 
   header << "      </CellData>" << std::endl;
@@ -49,12 +49,11 @@ void write_vtk(SimulationDomain& domain, std::string filename) {
   std::ofstream file;
   DomainData ddata = domain.get_data();
   uint64_t field_size = ddata.NX * ddata.NY * sizeof(double);
-  uint64_t length = field_size * ddata.N_SCALAR_FIELDS;
   file.open(filename, std::ios::out | std::ios::binary);
   file << vtk_file_header(ddata.NX, ddata.NY, ddata.field_descriptors);
-  file.write((char*)&length, sizeof(uint64_t));
 
   for (int i = 0; i < ddata.N_SCALAR_FIELDS; i++) {
+    file.write((char*)&field_size, sizeof(uint64_t));
     file.write((char*)ddata.fields[i].data(), field_size);
   }
 
